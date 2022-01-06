@@ -1,50 +1,48 @@
 using System.Numerics;
 using UnityEngine;
 
-public class GlodController : MonoBehaviour
+public class GoldController 
 {
     #region Data
 
-    const string zero = "0";
-
+    private const string zero = "0";
+    private static readonly int _asciiA = 65;
+    private static readonly int _asciiZ = 90;
+    private static readonly int _unitSize = 2;
+    
     /// <summary>
     /// 단위 표현 스타일
     /// </summary>
     public enum CurrencyType { Default, SI, }
 
-    private static readonly int _asciiA = 65;
-    private static readonly int _asciiZ = 90;
-    private static readonly int _unitSize = 2;
-
-    static readonly string[] currencyUnits = new string[]
+    /// <summary>
+    /// 화폐 단위
+    /// </summary>
+    private static readonly string[] currencyUnits = new string[]
     {
         "", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
     };
 
-    BigInteger gold = 0;
+    /// <summary>
+    /// 현재 보석
+    /// </summary>
+    [SerializeField] private static BigInteger _gold = 0;
 
-    #endregion
-
-    #region Fields
-    #endregion
-
-    #region Unity methods
-
-    private void Awake()
+    /// <summary>
+    /// 현재 보석 변수의 프로퍼티
+    /// </summary>
+    public static BigInteger Gold
     {
-        BigInteger intNum = BigInteger.Pow(10, 55);
-        string s =ToCurrencyString(intNum);
-        Debug.Log(intNum);
-        Debug.Log(s);
-    }
-
-    private void Start()
-    {
-        
+        get { return _gold; }
+        set
+        {
+            _gold = value;
+        }
     }
 
     #endregion
 
+   
     #region Methods
 
     #region Convert
@@ -66,8 +64,9 @@ public class GlodController : MonoBehaviour
         //거듭제곱
         int exponent = 0;
 
-        string[] partsSplit = num.ToString("E").Split('+');
+        string[] partsSplit = num.ToString("E2").Split('+');
 
+        //예외처리
         if(partsSplit.Length <2)
         {
             return zero;
@@ -80,11 +79,14 @@ public class GlodController : MonoBehaviour
         //몫은 단위 문자열의 인덱스
         int quotient = exponent / _unitSize;
 
-        //예외처리 - 정해진 숫자단위보다 높을 경우 99.Z
+        //예외처리 - 정해진 숫자단위보다 높을 경우 99.99Z 반환
         if (quotient > currencyUnits.Length - 1)
         {
             unitString = currencyUnits[currencyUnits.Length - 1];
-            showNumber = (Mathf.Pow(10, _unitSize) - 1).ToString();
+            showNumber = (Mathf.Pow(10, _unitSize) -0.01).ToString();
+#if UNITY_EDITOR
+            Debug.LogError("최대 단위를 넘었습니다.");
+#endif
             return string.Format("{0}{1}", showNumber, unitString);
         }
 
@@ -120,10 +122,20 @@ public class GlodController : MonoBehaviour
 
     #endregion
 
-    public void AddGold(BigInteger add)
-    {
-        gold += add;
-    }
+    //public static void AddGold(BigInteger add)
+    //{
+    //    _gold += add;
+    //}
+
+    //public static void SubtractGold(BigInteger add)
+    //{
+    //    _gold += add;
+    //}
+
+    //public static BigInteger GetGold()
+    //{
+    //    return _gold;
+    //}
 
 
     #endregion
