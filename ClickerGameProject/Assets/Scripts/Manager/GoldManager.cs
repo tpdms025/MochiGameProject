@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
@@ -23,6 +24,16 @@ public class GoldManager : MonoBehaviour
     /// </summary>
     [SerializeField] private BigInteger m_goldPerSec = 0;
 
+
+    //DB 저장 및 UI관리
+    public event Action<BigInteger> onGoldChanged;
+    public event Action<BigInteger> onGoldPerClickChanged;
+    public event Action<BigInteger> onGoldPerSecChanged;
+
+    #endregion
+
+    #region Property
+
     /// <summary>
     /// m_gold의 프로퍼티
     /// </summary>
@@ -32,8 +43,11 @@ public class GoldManager : MonoBehaviour
         set
         {
             m_gold = value;
-            //DB 저장
-            //
+
+            if (onGoldChanged != null)
+            {
+                onGoldChanged(m_gold);
+            }
         }
     }
 
@@ -46,8 +60,11 @@ public class GoldManager : MonoBehaviour
         set
         {
             m_goldPerClick = value;
-            //DB 저장
-            //
+
+            if (onGoldChanged != null)
+            {
+                onGoldChanged(m_gold);
+            }
         }
     }
 
@@ -60,11 +77,13 @@ public class GoldManager : MonoBehaviour
         set
         {
             m_goldPerSec = value;
-            //DB 저장
-            //
+
+            if (onGoldChanged != null)
+            {
+                onGoldChanged(m_gold);
+            }
         }
     }
-
     #endregion
 
     #region Fields
@@ -87,41 +106,25 @@ public class GoldManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(this.gameObject);
-            InitGold();
         }
         else
         {
             Destroy(this.gameObject);
         }
+        InitGold();
     }
 
     private void Start()
     {
-        StartCoroutine(AddGoldPerLoop());
+        StartCoroutine(AddGoldPerSecLoop());
     }
 
     #endregion
 
 
     #region Methods
-    public void TestAddGold()
-    {
-        AddGold((Gold+1)*(Gold+1));
-    }
 
     #region Gold Function
-
-    //public BigInteger GetGold()
-    //{
-    //    return Gold;
-    //}
-
-    //public void SetGold(BigInteger _newGold)
-    //{
-    //    Gold = _newGold;
-    //    //DB 저장
-    //    //
-    //}
 
     public void AddGold(BigInteger _newGold)
     {
@@ -142,19 +145,6 @@ public class GoldManager : MonoBehaviour
     #endregion
 
     #region GoldPerClick Function
-
-    //public BigInteger GetGoldPerClick()
-    //{
-    //    return m_goldPerClick;
-    //}
-    
-    //public void SetGoldPerClick(BigInteger _newGoldPerClick)
-    //{
-    //    m_goldPerClick = _newGoldPerClick;
-
-    //    //DB저장
-    //    //
-    //}
 
     public void AddGoldPerClick(BigInteger _newGoldPerClick)
     {
@@ -200,7 +190,11 @@ public class GoldManager : MonoBehaviour
 
     #region Private Methods
 
-    private IEnumerator AddGoldPerLoop()
+    /// <summary>
+    /// 1초당 골드를 증가시키는 반복문
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator AddGoldPerSecLoop()
     {
         while (true)
         {
@@ -212,15 +206,7 @@ public class GoldManager : MonoBehaviour
         }
     }
 
-    private void LoadDBCurrency()
-    {
-
-    }
-
-    private void SaveDBCurrency()
-    {
-
-    }
+ 
 
     #endregion
 }

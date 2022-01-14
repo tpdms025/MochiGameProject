@@ -1,4 +1,4 @@
-//1초당 자동으로 골드가 증가하는 아이템의 업그레이드 버튼
+//클릭시 골드가 증가하는 아이템의 업그레이드 버튼
 
 using System.Collections;
 using System.Collections.Generic;
@@ -7,21 +7,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemButton : MonoBehaviour
+public class ClickUpgrade : MonoBehaviour
 {
     #region Data
 
     //버튼 이름
-    public string itemName;
+    public string upgradeName;
 
     //레벨
-    private int level = 1;
+    private int level;
 
-    //한번 업그레이드 할때마다 초당 증가하는 보석량
-    [SerializeField] private BigInteger goldPerSec;
+    //한번 업그레이드 할때마다 goldPerClick 변수가 얼만큼 증가할지에 대한 변수
+    [SerializeField] private BigInteger goldByUpgrade;
 
-    //처음으로 업그레이드 할때의 초당 보석량
-    private BigInteger startGoldPerSec = 1;
+    //처음으로 업그레이드 할때 증가하는 goldPerClick 값
+    private BigInteger startGoldByUpgrade = 1;
 
     //현재 업그레이드의 비용
     private BigInteger currentCost;
@@ -32,16 +32,13 @@ public class ItemButton : MonoBehaviour
     //구입할 수 있는 갯수
     private int countPurchase = 1;
 
-    //구매했는지에 대한 bool 값
-    [HideInInspector] public bool isPurchased = false;
-
 
 
     //goldPerClick 증가에 필요한 상수값
-    private float upgradePow = 5f;
+    public float upgradePow = 25.0f;
 
     //비용 증가에 필요한 상수값
-    private float costPow = 50.0f;
+    public float costPow = 50.0f;
 
 
     #endregion
@@ -51,20 +48,17 @@ public class ItemButton : MonoBehaviour
     [SerializeField] private Image preview;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI levelText;
-    [SerializeField] private TextMeshProUGUI goldPerSecText;
+    [SerializeField] private TextMeshProUGUI goldPerText;
     [SerializeField] private TextMeshProUGUI buyInfoText;
+
 
     #endregion
 
     #region Unity methods
 
-    private void Awake()
-    {
-        Init();
-    }
-
     private void Start()
     {
+        LoadDB();
         UpdateUI();
     }
 
@@ -73,21 +67,19 @@ public class ItemButton : MonoBehaviour
     #region Methods
 
     /// <summary>
-    /// 아이템 구입하기
+    /// 구입하기
     /// </summary>
     public void PurchaseUpgrade()
     {
         //구매 가능하면 
-        if (GoldManager.Instance.Gold >= currentCost)
+        if(GoldManager.Instance.Gold >= currentCost)
         {
-            isPurchased = true;
             GoldManager.Instance.SubGold(currentCost);
             level++;
+            GoldManager.Instance.AddGoldPerClick(goldByUpgrade);
 
-            UpdateItem();
+            UpgradeItem();
             UpdateUI();
-
-            GoldManager.Instance.AddGoldPerSec(goldPerSec);
         }
     }
 
@@ -99,10 +91,10 @@ public class ItemButton : MonoBehaviour
     /// <summary>
     /// 비용과 한번 업그레이드 되는 골드의 양을 증가한다.
     /// </summary>
-    public void UpdateItem()
+    public void UpgradeItem()
     {
         //임시로 공식둠.
-        goldPerSec = startGoldPerSec * (BigInteger)Mathf.Pow(upgradePow, level);
+        goldByUpgrade = startGoldByUpgrade * (BigInteger) Mathf.Pow(upgradePow, level);
         currentCost = startCost * (BigInteger)Mathf.Pow(costPow, level);
     }
 
@@ -112,23 +104,23 @@ public class ItemButton : MonoBehaviour
     private void UpdateUI()
     {
         levelText.text = string.Format("Lv.{0}", level);
+        string strGoldPer = CurrencyParser.ToCurrencyString(goldByUpgrade);
+        goldPerText.text = string.Format("{0}/s", strGoldPer);
 
-        string strGoldPer = CurrencyParser.ToCurrencyString(goldPerSec);
-        goldPerSecText.text = string.Format("{0}/s", strGoldPer);
-        
         string strCurCost = CurrencyParser.ToCurrencyString(currentCost);
         buyInfoText.text = string.Format("buy x {0} <br>{1}", countPurchase, strCurCost);
 
     }
 
     /// <summary>
-    /// 데이터들을 초기화한다.
+    /// DB를 불러온다.
     /// </summary>
-    private void Init()
+    private void LoadDB()
     {
         level = 1;
         currentCost = startCost;
-        goldPerSec = startGoldPerSec;
+        goldByUpgrade = startGoldByUpgrade;
+
     }
     #endregion
 }

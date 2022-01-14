@@ -26,10 +26,14 @@ public class TabController : MonoBehaviour
 
     private void Start()
     {
-        for(int i=0;i<toggles.Length;i++)
+        if (toggles.Length.Equals(scrollViews.Length))
         {
-            int a = i;
-            toggles[i].onValueChanged.AddListener(delegate { OnChanged(toggles[a],scrollViews[a].transform); });
+
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                int a = i;
+                toggles[i].onValueChanged.AddListener(delegate { OnChanged(toggles[a], scrollViews[a].transform); });
+            }
         }
     }
     #endregion

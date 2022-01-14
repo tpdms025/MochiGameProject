@@ -282,7 +282,7 @@ GameObject:
   - component: {fileID: 6164370453205097679}
   - component: {fileID: 3158007059355806795}
   m_Layer: 5
-  m_Name: ClickCell
+  m_Name: ClickItemCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -386,6 +386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   upgradeName: AAA
+  isPurchased: 0
   upgradePow: 25
   costPow: 50
   preview: {fileID: 5651528687150417539}
