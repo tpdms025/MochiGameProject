@@ -20,7 +20,7 @@ public class ShowGoodsUI : MonoBehaviour
     #region Unity methods
     private void Start()
     {
-        StartCoroutine(UpdateCurrencyText());
+        StartCoroutine(Cor_UpdateCurrencyText());
     }
     #endregion
 
@@ -30,7 +30,7 @@ public class ShowGoodsUI : MonoBehaviour
     /// 화폐 UI텍스트를 업데이트한다.
     /// </summary>
     /// <returns></returns>
-    private IEnumerator UpdateCurrencyText()
+    private IEnumerator Cor_UpdateCurrencyText()
     {
         while(true)
         {
