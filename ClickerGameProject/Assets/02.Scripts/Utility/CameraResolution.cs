@@ -6,15 +6,36 @@ using UnityEngine;
 
 public class CameraResolution : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [Tooltip("직접 타겟 해상도를 지정하는지")]
+    public bool isCustom = false;
 
-    // Update is called once per frame
-    void Update()
+    public SpriteRenderer targetSprite;
+    public Vector2 targetResolution;
+    private int PixelPerUnit = 100;
+
+    private void Start()
     {
-        
+        if (!isCustom && targetSprite != null)
+        {
+            targetResolution = new Vector2(targetSprite.bounds.size.x, targetSprite.bounds.size.y);
+            PixelPerUnit = 1;
+        }
+
+
+        float screenRatio = (float)Screen.width / (float)Screen.height;
+        float targetRatio = targetResolution.x / targetResolution.y;
+
+        //세로길이 고정
+        //if(screenRatio >= targetRatio)
+        //{
+        //    Camera.main.orthographicSize = targetResolution.y * 0.5f / PixelPerUnit;
+        //}
+        //else
+        //{
+        //가로길이 고정
+        float diffInSize = targetRatio / screenRatio;
+        Camera.main.orthographicSize = targetResolution.y * 0.5f * diffInSize / PixelPerUnit * Camera.main.rect.position.y;
+        // == targetResolution.x * Screen.height * 0.5f / Screen.width
+        //}
     }
 }
