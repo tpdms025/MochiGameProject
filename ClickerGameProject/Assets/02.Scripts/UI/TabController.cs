@@ -9,10 +9,12 @@ public class TabController : MonoBehaviour
     #endregion
 
     #region Fields
+
     private RectTransform toggleList;
     private Toggle[] toggles;
     private RectTransform listPanelRect;
-    public ScrollRect[] scrollViews;
+    public GameObject[] m_pageList;
+
     #endregion
 
     #region Unity methods
@@ -26,13 +28,12 @@ public class TabController : MonoBehaviour
 
     private void Start()
     {
-        if (toggles.Length.Equals(scrollViews.Length))
+        if (toggles.Length.Equals(m_pageList.Length))
         {
-
             for (int i = 0; i < toggles.Length; i++)
             {
                 int a = i;
-                toggles[i].onValueChanged.AddListener(delegate { OnChanged(toggles[a], scrollViews[a].transform); });
+                toggles[i].onValueChanged.AddListener(delegate { OnToggleChanged(toggles[a], m_pageList[a].transform); });
             }
         }
     }
@@ -42,7 +43,12 @@ public class TabController : MonoBehaviour
     #endregion
 
     #region Private Methods
-    public void OnChanged(Toggle _toggle, Transform _scroll)
+    /// <summary>
+    /// 토글 값이 변경될 때 호출된다.
+    /// </summary>
+    /// <param name="_toggle"></param>
+    /// <param name="_scroll"></param>
+    public void OnToggleChanged(Toggle _toggle, Transform _scroll)
     {
         CloseAllView();
 
@@ -53,11 +59,11 @@ public class TabController : MonoBehaviour
     }
 
     /// <summary>
-    /// 모든 스크롤뷰를 닫습니다.
+    /// 모든 스크롤뷰를 닫는다.
     /// </summary>
     private void CloseAllView()
     {
-        foreach(ScrollRect scroll in scrollViews)
+        foreach(GameObject scroll in m_pageList)
         {
             scroll.gameObject.SetActive(false);
         }

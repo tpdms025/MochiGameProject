@@ -39,7 +39,7 @@ public class DBManager : MonoBehaviour
 
     private void Start()
     {
-        GoldManager.Instance.onGoldChanged += SaveGold;
+        MoneyManager.Instance.onJewelChanged += SaveJewel;
     }
 
     #endregion
@@ -58,10 +58,9 @@ public class DBManager : MonoBehaviour
 
     #endregion
 
-    #region Private Methods
-    private void SaveGold(BigInteger gold)
+    #region Jewel_Methods
+    private void SaveJewel(BigInteger _jewel)
     {
-        //Debug.Log("SaveGold: " + gold);
     }
     #endregion
 }

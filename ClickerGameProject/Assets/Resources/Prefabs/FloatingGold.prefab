@@ -240,7 +240,7 @@ CanvasGroup:
   m_Enabled: 1
   m_Alpha: 1
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &5177982528992442766
 MonoBehaviour:
@@ -254,8 +254,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 251dd5f93211c754d8012da298caa5c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveYSpeed: 2
-  alphaSpeed: 2
 --- !u!1 &7446167395604377324
 GameObject:
   m_ObjectHideFlags: 0

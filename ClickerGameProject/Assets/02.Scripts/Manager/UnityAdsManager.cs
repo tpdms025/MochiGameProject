@@ -14,18 +14,27 @@ public class UnityAdsManager : MonoBehaviour
 
     public bool testMode = true;
 
+
     private void Start()
     {
         Initialize();
     }
 
-    private void Initialize()
+
+
+    public void ShowRewarded()
     {
-        Advertisement.Initialize(gameId, testMode);
-#if UNITY_EDITOR
-        Debug.Log("Unity Ads Init completed.");
-#endif
+        if (Advertisement.IsReady())
+        {
+            var options = new ShowOptions { resultCallback = HandleShowResult };
+            Advertisement.Show(rewarded_video_id, options);
+        }
+        else
+        {
+            Debug.Log("AD FAIL");
+        }
     }
+
 
     private void HandleShowResult(ShowResult result)
     {
@@ -52,17 +61,13 @@ public class UnityAdsManager : MonoBehaviour
                 break;
         }
     }
-
-    public void ShowRewarded()
+    private void Initialize()
     {
-        if (Advertisement.IsReady())
-        {
-            var options = new ShowOptions { resultCallback = HandleShowResult };
-            Advertisement.Show(rewarded_video_id, options);
-        }
-        else
-        {
-            Debug.Log("AD FAIL");
-        }
+        Advertisement.Initialize(gameId, testMode);
+#if UNITY_EDITOR
+        Debug.Log("Unity Ads Init completed.");
+#endif
     }
+
+
 }
