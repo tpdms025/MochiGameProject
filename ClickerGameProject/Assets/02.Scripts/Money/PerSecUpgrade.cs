@@ -12,8 +12,8 @@ public class PerSecUpgrade : MonoBehaviour
     #region Data
 
     [Header("Attribute")]
-    //버튼 이름
-    public string itemName;
+    //아이디
+    public string _id;
 
     //레벨
     private int level;
@@ -87,11 +87,11 @@ public class PerSecUpgrade : MonoBehaviour
     #region Methods
 
     /// <summary>
-    /// 최초로 구입할 경우 UI 갱신
+    /// 최초로 아이템을 구입한다.
     /// </summary>
     public void FirstPurchase()
     {
-        if (!isPurchased && GoldManager.Instance.Gold >= currentCost)
+        if (!isPurchased && MoneyManager.Instance.Jewel >= currentCost)
         {
             lockPanel.SetActive(false);
             lockPreview.SetActive(false);
@@ -105,17 +105,17 @@ public class PerSecUpgrade : MonoBehaviour
 
 
     /// <summary>
-    /// 아이템 구입하기
+    /// 아이템 구입하여 업그레이드를 한다.
     /// </summary>
     public void PurchaseUpgrade()
     {
         //구매 가능하면 
-        if (GoldManager.Instance.Gold >= currentCost)
+        if (MoneyManager.Instance.Jewel >= currentCost)
         {
-            GoldManager.Instance.SubGold(currentCost);
+            MoneyManager.Instance.SubJewel(currentCost);
 
             UpgradeItem();
-            GoldManager.Instance.AddGoldPerSec(goldPerSec);
+            //MoneyManager.Instance.AddJewelPerSec(goldPerSec);
             UpdateUI();
         }
     }

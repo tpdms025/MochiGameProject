@@ -72,11 +72,11 @@ public class ClickUpgrade : MonoBehaviour
     public void PurchaseUpgrade()
     {
         //구매 가능하면 
-        if(GoldManager.Instance.Gold >= currentCost)
+        if(MoneyManager.Instance.Jewel >= currentCost)
         {
-            GoldManager.Instance.SubGold(currentCost);
+            MoneyManager.Instance.SubJewel(currentCost);
             level++;
-            GoldManager.Instance.AddGoldPerClick(goldByUpgrade);
+            MoneyManager.Instance.AddJewelPerClick(goldByUpgrade);
 
             UpgradeItem();
             UpdateUI();

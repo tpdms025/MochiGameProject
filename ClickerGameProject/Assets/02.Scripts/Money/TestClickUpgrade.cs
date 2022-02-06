@@ -56,7 +56,6 @@ public class TestClickUpgrade : MonoBehaviour
     {
         LoadDB();
 
-        GoldManager.Instance.AddGoldPerClick(goldByUpgrade);
         UpdateUI();
     }
 
@@ -70,13 +69,13 @@ public class TestClickUpgrade : MonoBehaviour
     public void PurchaseUpgrade()
     {
         //구매 가능하면 
-        if (GoldManager.Instance.Gold >= currentCost)
+        if (MoneyManager.Instance.Jewel >= currentCost)
         {
-            GoldManager.Instance.SubGold(currentCost);
+            MoneyManager.Instance.SubJewel(currentCost);
             level++;
 
             UpgradeItem();
-            GoldManager.Instance.AddGoldPerClick(goldByUpgrade);
+            MoneyManager.Instance.AddJewelPerClick(goldByUpgrade);
             UpdateUI();
         }
     }
