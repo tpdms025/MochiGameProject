@@ -31,7 +31,10 @@ public class GUIProductScrollView : MonoBehaviour
         ProductCellData cell = new ProductCellData();
         cell.index = 0;
         cell.name = database[0].name;
+        cell.level = 0;
+        cell.nextLevel = 1;
         cell.jewelPerClick = BigInteger.Pow(3, 0);
+        cell.nextJewelPerClick = BigInteger.Pow(3, 1);
         cell.cost = BigInteger.Pow(2, 0);
         cell.purchaseState = ProductCellData.PurchaseState.Unlock;
         grid.AddItem(cell);
@@ -41,7 +44,10 @@ public class GUIProductScrollView : MonoBehaviour
             ProductCellData _cell = new ProductCellData();
             _cell.index = i;
             _cell.name = database[i].name;
+            _cell.level = 0;
+            _cell.nextLevel = 1;
             _cell.jewelPerClick = BigInteger.Pow(3, i);
+            _cell.nextJewelPerClick = BigInteger.Pow(3, i+1);
             _cell.cost = BigInteger.Pow(2, i);
             _cell.purchaseState = ProductCellData.PurchaseState.Lock;
             grid.AddItem(_cell);
@@ -70,4 +76,22 @@ public class GUIProductScrollView : MonoBehaviour
         return ++currentId;
     }
 
+}
+
+[System.Serializable]
+public class JewelData
+{
+    public string name;
+    public int level;
+    public BigInteger amountPerTouch;
+    public BigInteger cost;
+
+
+    public JewelData(string _name, int _level, BigInteger _amountPerTouch, BigInteger _cost)
+    {
+        name = _name;
+        level = _level;
+        amountPerTouch = _amountPerTouch;
+        cost = _cost;
+    }
 }

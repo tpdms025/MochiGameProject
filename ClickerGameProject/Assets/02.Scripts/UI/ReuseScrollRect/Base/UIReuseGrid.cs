@@ -5,16 +5,17 @@ using UnityEngine.UI;
 
 public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMultiDataSource
 {
-    [SerializeField]
-    private LoopScrollRectMulti m_LoopScrollRect;
+    //사용하고자 하는 재사용 스크롤 변수
+    [SerializeField] private LoopScrollRectMulti m_LoopScrollRect;
 
     //재사용 데이터를 보관하는 변수
-    [HideInInspector]
-    public ReuseBankBase m_ReuseBank;
+    [HideInInspector] public ReuseBankBase m_ReuseBank;
     //private UIReuseItemCell[] m_cellList;
 
-    public LoopScrollRectMulti m_ScrollRect { get; private set; }
 
+
+    //사용중인 재사용 스크롤 변수
+    public LoopScrollRectMulti m_ScrollRect { get; private set; }
     // Is Use MulitiPrefab
     public bool m_IsUseMultiPrefabs = false;
     // Cell Prefab
@@ -137,6 +138,10 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
         m_ScrollRect.RefillCells();
     }
 
+    /// <summary>
+    /// 셀 데이터를 인덱스 순서로 정렬한다.
+    /// </summary>
+    /// <param name="isReverse"></param>
     public void SortCellData_IndexOrder(bool isReverse = false)
     {
         // 람다식으로 정렬 구현
@@ -151,11 +156,21 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
         RefillAllCell();
     }
 
+    /// <summary>
+    /// 타겟 인덱스인 셀로 스크롤한다.
+    /// </summary>
+    /// <param name="targetIndx"></param>
+    /// <param name="moveSpeed"></param>
     public void SrollToCell(int targetIndx, int moveSpeed = -1)
     {
         m_ScrollRect.SrollToCell(targetIndx, moveSpeed);
     }
 
+    /// <summary>
+    /// 타겟 인덱스인 셀로 정해진 시간동안 스크롤한다.
+    /// </summary>
+    /// <param name="targetIndx"></param>
+    /// <param name="time"></param>
     public void SrollToCellWithinTime(int targetIndx, float time = 0.5f)
     {
         m_ScrollRect.SrollToCellWithinTime(targetIndx, time);

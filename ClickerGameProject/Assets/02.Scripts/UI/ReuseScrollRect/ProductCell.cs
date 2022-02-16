@@ -17,11 +17,15 @@ public class ProductCell : UIReuseItemCell
     private BigInteger buyCost;
     private BigInteger jewelPerClick;
     [SerializeField] private ProductCellData.PurchaseState state;
+
     #region Fields
     [SerializeField] private Image bgImage;
     [SerializeField] private Image preview;
     [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI nextLevelText;
     [SerializeField] private TextMeshProUGUI jewelPerClickText;
+    [SerializeField] private TextMeshProUGUI nextJewelPerClickText;
     [SerializeField] private TextMeshProUGUI buyCostText;
 
     public Button purchaseButton;
@@ -29,11 +33,11 @@ public class ProductCell : UIReuseItemCell
     #endregion 
 
 
-    public override void UpdateData(int idx, IReuseCellData _CellData)
+    public override void UpdateData(int idx, IReuseCellData _cellData)
     {
-        base.UpdateData(idx, _CellData);
+        base.UpdateData(idx, _cellData);
 
-        ProductCellData item = _CellData as ProductCellData;
+        ProductCellData item = _cellData as ProductCellData;
         if (item == null)
             return;
 
@@ -43,19 +47,22 @@ public class ProductCell : UIReuseItemCell
         //UI 갱신
         preview.name = item.imageName;
         titleText.text = item.name;
+        levelText.text = string.Format("Lv.{0}", item.level);
+        nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
         jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.jewelPerClick));
-        buyCostText.text = string.Format("Cost {0}", CurrencyParser.ToCurrencyString(item.cost));
+        nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextJewelPerClick));
+        buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
 
         ////purchaseButton.onClick.AddListener(delegate { OnPurchase(item.cost, item.jewelPerClick, ref item.isPurchased); });
-        UpdateUI(state);
-        OnPurchaseBtnChanged(MoneyManager.Instance.Jewel);
+        SetLockUI(state);
+        ChangeStateOfUpgradeBtn(MoneyManager.Instance.Jewel);
     }
 
-    private void Awake()
+    private void OnEnable()
     {
         SubscribeToPurchaseButtonEvents();
     }
-    private void OnDestroy()
+    private void OnDisable()
     {
         UnsubscribeFromPurchaseButtonEvents();
     }
@@ -67,15 +74,20 @@ public class ProductCell : UIReuseItemCell
     }
 
 
-    private void OnPurchaseBtnChanged(BigInteger jewel)
+    /// <summary>
+    /// 업그레이드 버튼의 상태를 변경한다.
+    /// </summary>
+    /// <param name="jewel"></param>
+    private void ChangeStateOfUpgradeBtn(BigInteger jewel)
     {
         bool result;
         if (state.Equals(ProductCellData.PurchaseState.Lock))
         {
-            result = true;
+            result = false;
         }
         else
         {
+            //구매할 수 있는지 판별
             result = jewel >= buyCost ? true : false;
         }
         purchaseButton.interactable = result;
@@ -83,23 +95,22 @@ public class ProductCell : UIReuseItemCell
 
 
     /// <summary>
-    /// 아이템을 구입한다.
+    /// 아이템을 업그레이드한다.
     /// </summary>
-    //public void OnPurchase(BigInteger needCost, BigInteger jewelPerClick, ref bool _isPurchased)
-    private void OnPurchase()
+    private void PurchaseUpgrade()
     {
         if (state.Equals(ProductCellData.PurchaseState.Unlock))
         {
-            state = ProductCellData.PurchaseState.Select;
-            UpdateUI(state);
-
-
             MoneyManager.Instance.SubJewel(buyCost);
             MoneyManager.Instance.AddJewelPerClick(jewelPerClick);
+
+            state = ProductCellData.PurchaseState.Select;
+            SetLockUI(state);
+
         }
     }
 
-    private void UpdateUI(ProductCellData.PurchaseState _state)
+    private void SetLockUI(ProductCellData.PurchaseState _state)
     {
         bgImage.color = Color.white;
         switch (state)
@@ -133,14 +144,14 @@ public class ProductCell : UIReuseItemCell
 
     private void SubscribeToPurchaseButtonEvents()
     {
-        purchaseButton.onClick.AddListener(OnPurchase);
-        MoneyManager.Instance.onJewelChanged += OnPurchaseBtnChanged;
+        purchaseButton.onClick.AddListener(PurchaseUpgrade);
+        MoneyManager.Instance.onJewelChanged += ChangeStateOfUpgradeBtn;
     }
 
     private void UnsubscribeFromPurchaseButtonEvents()
     {
-        purchaseButton.onClick.RemoveListener(OnPurchase);
-        MoneyManager.Instance.onJewelChanged -= OnPurchaseBtnChanged;
+        purchaseButton.onClick.RemoveListener(PurchaseUpgrade);
+        MoneyManager.Instance.onJewelChanged -= ChangeStateOfUpgradeBtn;
     }
 
 }
