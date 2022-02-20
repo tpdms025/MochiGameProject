@@ -5,14 +5,11 @@ using UnityEngine.UI;
 
 public class TabController : MonoBehaviour
 {
-    #region Data
-    #endregion
 
     #region Fields
 
-    private RectTransform toggleList;
-    private Toggle[] toggles;
-    private RectTransform listPanelRect;
+    private RectTransform toggleParent;
+    private Toggle[] m_toggles;
     public GameObject[] m_pageList;
 
     #endregion
@@ -20,20 +17,20 @@ public class TabController : MonoBehaviour
     #region Unity methods
     private void Awake()
     {
-        toggleList = transform.Find("ToggleList").GetComponent<RectTransform>();
-        toggles = toggleList.GetComponentsInChildren<Toggle>();
+        toggleParent = transform.Find("ToggleList").GetComponent<RectTransform>();
+        m_toggles = toggleParent.GetComponentsInChildren<Toggle>();
         //listPanelRect = transform.Find("ListPanel").GetComponent<RectTransform>();
         //scrollViews = listPanelRect.GetComponentsInChildren<ScrollRect>();
     }
 
     private void Start()
     {
-        if (toggles.Length.Equals(m_pageList.Length))
+        if (m_toggles.Length.Equals(m_pageList.Length))
         {
-            for (int i = 0; i < toggles.Length; i++)
+            for (int i = 0; i < m_toggles.Length; i++)
             {
                 int a = i;
-                toggles[i].onValueChanged.AddListener(delegate { OnToggleChanged(toggles[a], m_pageList[a].transform); });
+                m_toggles[i].onValueChanged.AddListener(delegate { OnToggleChanged(m_toggles[a], m_pageList[a].transform); });
             }
         }
     }
@@ -50,6 +47,7 @@ public class TabController : MonoBehaviour
     /// <param name="_scroll"></param>
     public void OnToggleChanged(Toggle _toggle, Transform _scroll)
     {
+        Debug.Log("ToggleTab");
         CloseAllView();
 
         if (_toggle.isOn)

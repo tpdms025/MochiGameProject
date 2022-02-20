@@ -6,6 +6,7 @@ using UnityEngine;
 public class DBManager : MonoBehaviour
 {
     #region Data
+
     #endregion
 
     #region Fields
@@ -34,12 +35,7 @@ public class DBManager : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        Debug.Log(this.gameObject.name+ "Awake");
-    }
-
-    private void Start()
-    {
-        MoneyManager.Instance.onJewelChanged += SaveJewel;
+        //MoneyManager.Instance.onJewelChanged += SaveJewel;
     }
 
     #endregion

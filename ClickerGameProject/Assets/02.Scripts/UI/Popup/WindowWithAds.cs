@@ -8,10 +8,15 @@ using UnityEngine.UI;
 [RequireComponent(typeof(AdsController))]
 public class WindowWithAds : MonoBehaviour , IAdsRewardHandler
 {
+    //광고 시청 후 이벤트
     public event Action onAdsFinished;
+    //광고가 끝난 후 이벤트 (취소 포함)
     public event Action onAdsEnded;
-    private bool isOpen = true;
 
+    //해당 창이 열리거나 닫혀있는지
+    [SerializeField] private bool isOpen = true;
+
+    //광고 버튼
     [SerializeField] private Button adsButton;
 
     private AdsController adsController;
@@ -75,13 +80,13 @@ public class WindowWithAds : MonoBehaviour , IAdsRewardHandler
 
     public void ToggleOpenOrClose()
     {
-        if(!isOpen)
+        if(isOpen)
         {
-            gameObject.SetActive(true);
+            gameObject.SetActive(false);
         }
         else
         {
-            gameObject.SetActive(false);
+            gameObject.SetActive(true);
         }
         isOpen = !isOpen;
     }
