@@ -123,6 +123,7 @@ public class MoneyManager : MonoBehaviour
         InitJewel();
         InitCube();
         InitMarble();
+        JewelPerClick = 1;
 
         StartCoroutine(Loop_IncreaseJewelPerSec());
     }

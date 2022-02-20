@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,9 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
     private Dictionary<string, Stack<Transform>> m_Pool_Type = new Dictionary<string, Stack<Transform>>();
 
 
+    //ÇöÀç ¼¿ÀÇ ÀÎµ¦½º ¹øÈ£
+    public int m_ClickIndexID=-1;
+
     private void Awake()
     {
         if (GetComponentInChildren<LoopScrollRectBase>() == null)
@@ -36,13 +40,15 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
             return;
         }
         InitData();
-        m_ReuseBank.m_CellSizes.Add(new Vector2(120, 200));
     }
 
     private void InitData()
     {
         if (m_ReuseBank == null)
+        {
             m_ReuseBank = new ReuseBankBase();
+            m_ReuseBank.m_CellSizes.Add(new Vector2(120, 200));
+        }
 
         if (m_ScrollRect == null)
         {
@@ -71,6 +77,14 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
         m_ReuseBank.InsertCellData(idx, cellData);
         if (Update)
             RefreshAllCell();
+    }
+    public void SetItem(int idx, IReuseCellData cellData, bool Update = false)
+    {
+        m_ReuseBank.SetCellData(idx,cellData);
+        if (Update)
+            m_ScrollRect.RefillCells(idx - 1, false);
+
+        //RefreshAllCell();
     }
     public void SetItem(List<IReuseCellData> ListData, bool Update = false)
     {
@@ -246,14 +260,17 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
             }
         }
 
-        //TempScrollIndexCallbackBase = candidate.gameObject.GetComponent<UIReuseItemCell>();
-        //if (null != TempScrollIndexCallbackBase)
-        //{
-        //    //TempScrollIndexCallbackBase.SetUniqueID(m_ReuseBank.GetCellData(index).UniqueID);
+        TempScrollIndexCallbackBase = candidate.gameObject.GetComponent<UIReuseItemCell>();
+        if (null != TempScrollIndexCallbackBase)
+        {
+            //TempScrollIndexCallbackBase.SetUniqueID(m_ReuseBank.GetCellData(index).UniqueID);
 
-        //    TempScrollIndexCallbackBase.onClick_InitOnStart.RemoveAllListeners();
-        //    TempScrollIndexCallbackBase.onClick_InitOnStart.AddListener(() => OnButtonScrollIndexCallbackClick(TempScrollIndexCallbackBase, index));
-        //}
+            TempScrollIndexCallbackBase.onClick_InitOnStart.RemoveAllListeners();
+            TempScrollIndexCallbackBase.onClick_InitOnStart.AddListener(() => OnButtonScrollIndexCallbackClick(TempScrollIndexCallbackBase, index));
+
+            TempScrollIndexCallbackBase.onClick_Index = null;
+            TempScrollIndexCallbackBase.onClick_Index += onClickEvent;
+        }
 
         return candidate.gameObject;
     }
@@ -301,15 +318,23 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
         //transform.SendMessage("UpdateData", idx);
 
         // Use direct call for better performance
-        transform.GetComponent<UIReuseItemCell>()?.UpdateData(idx, m_ReuseBank.GetCellData(idx));
+        transform.GetComponent<UIReuseItemCell>()?.UpdateData(idx, m_ReuseBank.GetCellData(idx), m_ClickIndexID);
     }
 
     #endregion
-    private void OnButtonScrollIndexCallbackClick(UIReuseItemCell ScrollIndexCallback, int index)
+    public event Action<int> onClickEvent;
+    private void OnButtonScrollIndexCallbackClick(UIReuseItemCell ScrollIndexCallback, int ClickIndexID)
     {
-        IReuseCellData content = m_ReuseBank.GetCellData(index);
-        Debug.LogWarningFormat("InitOnStartMulti => Click index: {0}, content: {1}", index, content.name);
+        //Debug.LogWarningFormat("InitOnStartMulti => Click index: {0}", ClickIndexID);
 
+        m_ClickIndexID = ClickIndexID;
+        //m_ClickObject = content;
+
+        foreach (var TempScrollIndexCallback in m_LoopScrollRect.content.GetComponentsInChildren<UIReuseItemCell>())
+        {
+            IReuseCellData content = m_ReuseBank.GetCellData(TempScrollIndexCallback.m_Index);
+            TempScrollIndexCallback.RefreshUI(ClickIndexID, content);
+        }
     }
 }
 

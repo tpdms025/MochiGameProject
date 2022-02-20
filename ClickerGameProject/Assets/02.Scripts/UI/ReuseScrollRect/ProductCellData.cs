@@ -2,6 +2,8 @@ using System;
 using System.Numerics;
 using UnityEngine;
 
+public enum CellState { Lock, Unlock, MaxCompletion }
+
 public class ProductCellData : IReuseCellData
 {
     public int index { get; set; }
@@ -14,10 +16,11 @@ public class ProductCellData : IReuseCellData
     public int level { get; set; }
     public int nextLevel { get; set; }
 
+
     public BigInteger jewelPerClick { get; set; }
     public BigInteger nextJewelPerClick { get; set; }
 
     public BigInteger cost { get; set; }
-    public enum PurchaseState { Lock, Unlock, Select, Have }
-    public PurchaseState purchaseState { get; set; }
+    
+    public CellState cellState { get; set; }
 }

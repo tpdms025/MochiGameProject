@@ -90,6 +90,11 @@ public class ReuseBankBase
         m_listData.Clear();
     }
 
+    public void SetCellData(int index, IReuseCellData newData)
+    {
+        m_listData[index] = newData;
+    }
+
     public void SetListData(List<IReuseCellData> newListData)
     {
         m_listData = newListData;

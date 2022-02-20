@@ -643,10 +643,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f21bb58ee1e631a47990924a8e5f2652, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Button: {fileID: 732311258344320147}
+  m_Element: {fileID: 988438502318166589}
   m_OnClick_InitOnStart:
     m_PersistentCalls:
       m_Calls: []
-  m_Element: {fileID: 988438502318166589}
+  m_OnClick_Custom:
+    m_PersistentCalls:
+      m_Calls: []
   state: 0
   bgImage: {fileID: 652620001201378471}
   preview: {fileID: 5651528687150417539}
@@ -656,7 +660,6 @@ MonoBehaviour:
   jewelPerClickText: {fileID: 8780841849787129549}
   nextJewelPerClickText: {fileID: 9132165451891421218}
   buyCostText: {fileID: 3680898954426975249}
-  purchaseButton: {fileID: 732311258344320147}
   lockPanel: {fileID: 6496427034919775937}
 --- !u!114 &988438502318166589
 MonoBehaviour:
@@ -1832,7 +1835,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 0.7686275, b: 0.06666667, a: 1}
     m_HighlightedColor: {r: 1, g: 0.7686275, b: 0.06666667, a: 1}
     m_PressedColor: {r: 0.8018868, g: 0.6415444, b: 0.15508187, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 1, g: 0.7686275, b: 0.06666667, a: 1}
     m_DisabledColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
