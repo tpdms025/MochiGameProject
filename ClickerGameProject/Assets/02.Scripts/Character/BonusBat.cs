@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class BonusBat : MonoBehaviour
 {
+    //도착 위치
     [SerializeField] private Transform targetPos;
 
     //시작 위치
-    [SerializeField] private Vector3 startPos;
+    private Vector3 startPos;
 
     //이동 속도
     [SerializeField] private float speed = 2.0f;
@@ -82,6 +83,10 @@ public class BonusBat : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// 객체를 터치했는지 확인한다.
+    /// </summary>
+    /// <returns></returns>
     private bool IsTouchedObject()
     {
         Vector2 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
