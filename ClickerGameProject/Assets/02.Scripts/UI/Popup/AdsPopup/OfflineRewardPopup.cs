@@ -6,17 +6,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class OfflineRewardWindow : WindowWithAds
+public class OfflineRewardPopup : PopupWithAds
 {
     private int maxTimeInMinute;
     private int currentTimeInMinute;
-    private BigInteger rewardAmount;
+    private BigInteger baseRewardAmount;
     private BigInteger addRewardAmount;
-    private const int additionalMultiply = 3;
 
-    [SerializeField] private Button baseButton;
+    //기본 보상량에 곱할 배수
+    private float basicMultiply;
+    //추가 보상량에 곱할 배수
+    private float addMultiply = 3;
+
+
     [SerializeField] private Image fill;
-
     [SerializeField] private TextMeshProUGUI maxTimeText;
     [SerializeField] private TextMeshProUGUI curTimeText;
     [SerializeField] private TextMeshProUGUI rewardText;
@@ -29,8 +32,7 @@ public class OfflineRewardWindow : WindowWithAds
 
         if (baseButton != null)
         {
-            baseButton.onClick.AddListener(delegate { ApplyReward(); });
-            baseButton.onClick.AddListener(delegate { ToggleOpenOrClose(); });
+            baseButton.onClick.AddListener(delegate { ApplyBasicReward(); });
         }
         onAdsFinished += ApplyAdditionalReward;
     }
@@ -39,19 +41,27 @@ public class OfflineRewardWindow : WindowWithAds
         base.UnsubscribeFromButtonEvents();
     }
 
-    private void Start()
+    protected override void Start()
     {
+        //맨 처음에만 초기화.
         Initialize();
+        base.Start();
     }
 
-
-    private void ApplyReward()
+    /// <summary>
+    /// 기본 보상을 적용한다.
+    /// </summary>
+    private void ApplyBasicReward()
     {
-        MoneyManager.Instance.AddJewel(rewardAmount);
+        MoneyManager.Instance.AddJewel(baseRewardAmount);
     }
+
+    /// <summary>
+    /// 추가 보상을 적용한다.
+    /// </summary>
     private void ApplyAdditionalReward()
     {
-        MoneyManager.Instance.AddJewel(addRewardAmount);
+        MoneyManager.Instance.AddJewel(baseRewardAmount+addRewardAmount);
     }
 
     /// <summary>
@@ -59,16 +69,20 @@ public class OfflineRewardWindow : WindowWithAds
     /// </summary>
     private void Initialize()
     {
+        basicMultiply = 5.0f;
+        addMultiply = 3.0f;
         maxTimeInMinute = 240; // 4시간
         currentTimeInMinute = OfflineTimeToMinute();
-        if(currentTimeInMinute == 0 /*|| MoneyManager.Instance.JewelPerClick == 0*/)
+
+        //오프라인 시간이 0이거나 보상이 0일 경우의 예외처리
+        if(currentTimeInMinute == 0 || MoneyManager.Instance.JewelPerClick == 0)
         {
             Debug.Log("시간을 받지 못하거나 혹은 보상이 0입니다.");
             ToggleOpenOrClose();
             return;
         }
-        rewardAmount = GetRewardForTime(currentTimeInMinute);
-        addRewardAmount = GetAdditionalRewardForTime(currentTimeInMinute);
+        baseRewardAmount = GetRewardForTime(basicMultiply,currentTimeInMinute);
+        addRewardAmount = GetAdditionalRewardForTime(addMultiply);
 
         UpdateUI();
     }
@@ -77,9 +91,9 @@ public class OfflineRewardWindow : WindowWithAds
     /// 시간에 비례하여 보상을 가져온다.
     /// </summary>
     /// <returns></returns>
-    private BigInteger GetRewardForTime(int _curTimeInMinute)
+    private BigInteger GetRewardForTime(float multiply, int _curTimeInMinute)
     {
-        BigInteger rewardData =  new BigInteger(1 * _curTimeInMinute) * MoneyManager.Instance.JewelPerClick;
+        BigInteger rewardData =  new BigInteger(5 * _curTimeInMinute) * MoneyManager.Instance.JewelPerClick;
         return rewardData;
     }
 
@@ -87,9 +101,9 @@ public class OfflineRewardWindow : WindowWithAds
     /// 시간에 비례하여 보상을 추가로 가져온다.
     /// </summary>
     /// <returns></returns>
-    protected BigInteger GetAdditionalRewardForTime(int _curTimeInMinute)
+    protected BigInteger GetAdditionalRewardForTime(float multiply)
     {
-        BigInteger rewardData = GetRewardForTime(_curTimeInMinute) * new BigInteger(additionalMultiply);
+        BigInteger rewardData = baseRewardAmount * new BigInteger(addMultiply);
         return rewardData;
     }
 
@@ -116,18 +130,16 @@ public class OfflineRewardWindow : WindowWithAds
     /// </summary>
     private void UpdateUI()
     {
-        Debug.Log("currentTimeInMinute? "+ currentTimeInMinute);
+        //타이머 시간
+        curTimeText.text = string.Empty;
+        if (currentTimeInMinute >= 60 )  //시간
+            curTimeText.text += string.Format("{0}Time", currentTimeInMinute / 60);
+        if (currentTimeInMinute % 60 != 0) //분
+            curTimeText.text += string.Format(" {0}Minutes", currentTimeInMinute % 60);
 
         fill.fillAmount = (float)currentTimeInMinute / maxTimeInMinute;
         maxTimeText.text = string.Format("Max {0}Time", maxTimeInMinute/60);
-        curTimeText.text = string.Format("{0}Time", currentTimeInMinute / 60);
-        //시간 분 단위가 0이 아닐경우 추가
-        if (currentTimeInMinute % 60 != 0)
-        {
-            curTimeText.text += string.Format(" {0}Minutes", currentTimeInMinute % 60);
-        }
-
-        rewardText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(rewardAmount));
+        rewardText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(baseRewardAmount));
         addRewardText.text = string.Format("+{0} Add Jewel", CurrencyParser.ToCurrencyString(addRewardAmount));
     }
 }
