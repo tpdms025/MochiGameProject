@@ -7,7 +7,7 @@ using UnityEngine;
 public class CameraResolution : MonoBehaviour
 {
     [Tooltip("직접 타겟 해상도를 지정하는지")]
-    public bool isCustom = false;
+    public bool applyTargetSprite = false;
 
     public SpriteRenderer targetSprite;
     public Vector2 targetResolution;
@@ -15,27 +15,42 @@ public class CameraResolution : MonoBehaviour
 
     private void Start()
     {
-        if (!isCustom && targetSprite != null)
+        if (targetSprite == null)
+            return;
+
+        if (applyTargetSprite == true)
         {
             targetResolution = new Vector2(targetSprite.bounds.size.x, targetSprite.bounds.size.y);
             PixelPerUnit = 1;
         }
 
 
+        #region 텍스쳐 실제 픽셀 사이즈와 맞추는 버전
+
         float screenRatio = (float)Screen.width / (float)Screen.height;
         float targetRatio = targetResolution.x / targetResolution.y;
-
-        //세로길이 고정
-        //if(screenRatio >= targetRatio)
+        ////세로길이 고정
+        //if (screenRatio >= targetRatio)
         //{
         //    Camera.main.orthographicSize = targetResolution.y * 0.5f / PixelPerUnit;
         //}
         //else
         //{
-        //가로길이 고정
+        //    //가로길이 고정
         float diffInSize = targetRatio / screenRatio;
-        Camera.main.orthographicSize = targetResolution.y * 0.5f * diffInSize / PixelPerUnit * Camera.main.rect.position.y;
-        // == targetResolution.x * Screen.height * 0.5f / Screen.width
+        Camera.main.orthographicSize = targetResolution.y * diffInSize * 0.5f / PixelPerUnit;
+        //    //== targetResolution.x * Screen.height * 0.5f / Screen.width
         //}
+
+        #endregion
+
+
+        //Camera.main.orthographicSize = targetResolution.x * Screen.height * 0.5f / Screen.width / PixelPerUnit;
+        Camera.main.orthographicSize *= Camera.main.rect.position.y;
+
+        //카메라 하단 기준으로 스프라이트 위치를 배치
+        Vector3 centerPos = new Vector3(targetSprite.transform.position.x, targetSprite.transform.position.y, transform.position.z);
+        Vector3 distDiff = new Vector3(0, Camera.main.orthographicSize - targetSprite.bounds.size.y * 0.5f, 0);
+        transform.position = centerPos + distDiff;
     }
 }
