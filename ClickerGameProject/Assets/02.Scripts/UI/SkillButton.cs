@@ -35,7 +35,7 @@ public class SkillButton : MonoBehaviour
     [Header("[Temporary]")]
     [SerializeField] private Image circularImage;
 
-    [SerializeField] private WindowWithAds window;
+    [SerializeField] private PopupWithAds popup;
 
     #endregion
 
@@ -43,7 +43,7 @@ public class SkillButton : MonoBehaviour
     private void Awake()
     {
         button = GetComponent<Button>();
-        button.onClick.AddListener(window.ToggleOpenOrClose);
+        button.onClick.AddListener(popup.ToggleOpenOrClose);
     }
 
     private void Start()
@@ -54,13 +54,13 @@ public class SkillButton : MonoBehaviour
 
     private void OnEnable()
     {
-        window.onAdsFinished += TriggerEffect;
+        popup.onAdsFinished += TriggerEffect;
         SubscribeToSkillButtonEvents();
     }
 
     private void OnDisable()
     {
-        window.onAdsFinished -= TriggerEffect;
+        popup.onAdsFinished -= TriggerEffect;
         UnsubscribeFromSkillButtonEvents();
     }
     #endregion

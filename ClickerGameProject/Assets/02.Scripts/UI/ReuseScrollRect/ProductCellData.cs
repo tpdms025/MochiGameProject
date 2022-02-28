@@ -17,8 +17,8 @@ public class ProductCellData : IReuseCellData
     public int nextLevel { get; set; }
 
 
-    public BigInteger jewelPerClick { get; set; }
-    public BigInteger nextJewelPerClick { get; set; }
+    public BigInteger currentAmount { get; set; }
+    public BigInteger nextAmount { get; set; }
 
     public BigInteger cost { get; set; }
     

@@ -11,14 +11,18 @@ public class GUIProductScrollView : MonoBehaviour
     // 레벨,비용, 증가량.. 등 데이터들
     private List<List<JewelOriginData>> database;
 
-    //
-    private CellState[] states;
 
-    //현재 선택 중인 Cell의 인덱스 번호
+    //마지막으로 잠금해제된 Cell의 인덱스 번호
     [SerializeField] private int curIndex;
 
-    //현재 선택 중인 Cell의 레벨
+    //마지막으로 잠금해제된 Cell의 레벨
     [SerializeField] private int curLevel;
+
+    //셀 상태에 대한 배열
+    //선택한 셀이 max인지 구별하기 위한 변수이다. (max여야 다음 셀이 잠금해제 되는 형식)
+    private CellState[] states;
+
+    private int cellCount;
 
 
     private void Awake()
@@ -31,14 +35,21 @@ public class GUIProductScrollView : MonoBehaviour
     {
         //임시 데이터 (나중에 데이터 로드할 것)
         database = TempGemInfo();
+        cellCount = database.Count;
         InitializeData();
 
         //그리드에 데이터를 추가
-        for (int i = 0; i < database.Count; ++i)
+        for (int i = 0; i < cellCount; ++i)
         {
-            ProductCellData _cell = temp(i, 0);
-            _cell.cellState = states[i];
+            ProductCellData _cell;
+            if( i < curIndex)                  //max state
+                _cell = GetCellDataOfMaxLevel(i)    ;
+            else if (i == curIndex)             //unlock state
+                _cell = temp(i, curLevel);
+            else                                //lock state
+                _cell = temp(i,0);
 
+            _cell.cellState = states[i];
             grid.AddItem(_cell);
         }
         grid.RefreshAllCell();
@@ -49,9 +60,9 @@ public class GUIProductScrollView : MonoBehaviour
     /// </summary>
     private void InitializeData()
     {
-        curIndex = -1;
+        curIndex = 0;
         curLevel = 0;
-        states = new CellState[database.Count];
+        states = new CellState[cellCount];
         states[0] = CellState.Unlock;
     }
 
@@ -61,82 +72,42 @@ public class GUIProductScrollView : MonoBehaviour
     /// <param name="index"></param>
     private void Upgrade(int index)
     {
-        if (database.Count == 0) return;
+        if (cellCount == 0) return;
 
         curIndex = index;
         int maxLevel = database[index].Count - 1;
 
-        //레벨업
-        if (0 <= curLevel && curLevel < maxLevel)
-        {
-            //비용
-            MoneyManager.Instance.SubJewel(database[curIndex][curLevel].cost);
+        //레벨이 0 ~ maxLevel 범위가 아닐 경우 리턴
+        if (0 > curLevel || curLevel >= maxLevel) return;
 
-            BigInteger prevAmount = database[curIndex][curLevel].amountPerTouch;
-            BigInteger addAmount = database[curIndex][++curLevel].amountPerTouch;
-            MoneyManager.Instance.AddJewelPerClick(addAmount - prevAmount);
-        }
+        //***레벨업***
+        //재화 소모
+        MoneyManager.Instance.SubJewel(database[index][curLevel].cost);
+        BigInteger prevAmount = database[index][curLevel].amountPerTouch;
+        curLevel++;
+        BigInteger addAmount = database[index][curLevel].amountPerTouch;
+        MoneyManager.Instance.AddJewelPerClick(addAmount - prevAmount);
 
         //최대레벨에 도달할 경우
-        if (curLevel.Equals(maxLevel))
+        if (curLevel==maxLevel && index < cellCount - 1)
         {
-            //이번 셀 MaxUI
-            states[curIndex] = CellState.MaxCompletion;
-            grid.SetItem(curIndex, GetCellDataOfMaxLevel(curIndex));
+            //이번 셀 UI를 Max상태로 업데이트
+            states[index] = CellState.MaxCompletion;
+            grid.SetItem(index, GetCellDataOfMaxLevel(index));
 
             //다음 셀로 넘어가기
             curLevel = 0;
             curIndex++;
         }
 
-        //셀 잠금해제
+        //셀 잠금해제 상태 저장
         states[curIndex] = CellState.Unlock;
 
+        //그리드에 데이터 변경
         ProductCellData data = temp(curIndex, curLevel);
         grid.SetItem(curIndex, data);
     }
 
-    #region TEST
-    //private void Upgrade(int index)
-    //{
-    //    if (database.Count == 0) return;
-
-    //    curIndex = index;
-    //    int maxLevel = database[index].Count - 1;
-
-    //    if (0 < curLevel && curLevel < maxLevel - 1)    //레벨업
-    //    {
-    //        MoneyManager.Instance.SubJewel(database[index][curLevel].cost);
-    //        MoneyManager.Instance.AddJewelPerClick(database[index][curLevel].amountPerTouch);
-
-    //        curLevel++;
-
-
-    //        Debug.Log(curLevel + "으로 레벨업 max레벨은 " + maxLevel);
-    //    }
-    //    else // 다음 보석으로 교체 (Max)
-    //    {
-    //        if (curIndex >= 0)
-    //        {
-    //            //최대레벨인 cell 
-    //            states[curIndex] = ProductCellData.PurchaseState.MaxCompletion;
-    //            grid.SetItem(curIndex, GetCellDataOfMaxLevel(curIndex));
-    //        }
-    //        curLevel = 1;
-    //        curIndex++;
-
-    //        Debug.Log(curIndex + "으로 교체");
-    //    }
-    //    states[curIndex] = ProductCellData.PurchaseState.Unlock;
-    //    //레벨업한 cell의 데이터 갱신
-    //    ProductCellData data = temp(curIndex, curLevel);
-    //    grid.SetItem(curIndex, data);
-
-    //    grid.RefreshAllCell();
-
-    //    Debug.Log("현재 레벨은 " + curLevel + "이며,현재 인덱스는" + curIndex + " max레벨은 " + maxLevel);
-    //}
-    #endregion
 
     #region Data Function
 
@@ -148,7 +119,7 @@ public class GUIProductScrollView : MonoBehaviour
     /// <returns></returns>
     private ProductCellData temp(int index, int level)
     {
-        if(index < 0 || index > database.Count) return null;
+        if (index < 0 || index > database.Count) return null;
 
         int maxLevel = database[index].Count - 1;
 
@@ -156,9 +127,9 @@ public class GUIProductScrollView : MonoBehaviour
         _cell.index = index;
         _cell.name = database[index][level].name;
         _cell.level = database[index][level].level;
-        _cell.nextLevel = level.Equals(maxLevel) ? maxLevel : database[index][level+1].level;
-        _cell.jewelPerClick = database[index][level].amountPerTouch;
-        _cell.nextJewelPerClick = level.Equals(maxLevel) ? database[index][level].amountPerTouch : database[index][level+1].amountPerTouch;
+        _cell.nextLevel = level == maxLevel ? maxLevel : database[index][level + 1].level;
+        _cell.currentAmount = database[index][level].amountPerTouch;
+        _cell.nextAmount = level == maxLevel ? database[index][level].amountPerTouch : database[index][level + 1].amountPerTouch;
         _cell.cost = database[index][level].cost;
         _cell.cellState = states[index];
         return _cell;
@@ -175,8 +146,8 @@ public class GUIProductScrollView : MonoBehaviour
         _cell.name = database[index][maxLevel].name;
         _cell.level = database[index][maxLevel].level;
         _cell.nextLevel = _cell.level;
-        _cell.jewelPerClick = database[index][maxLevel].amountPerTouch;
-        _cell.nextJewelPerClick = _cell.jewelPerClick;
+        _cell.currentAmount = database[index][maxLevel].amountPerTouch;
+        _cell.nextAmount = _cell.currentAmount;
         _cell.cost = database[index][maxLevel].cost;
         _cell.cellState = states[index];
         return _cell;
@@ -222,14 +193,13 @@ public class GUIProductScrollView : MonoBehaviour
 }
 
 [System.Serializable]
-public class JewelOriginData
+public struct JewelOriginData
 {
     public string name;
     public int level;
     public BigInteger amountPerTouch;
     public BigInteger cost;
 
-    public JewelOriginData() { }
 
     public JewelOriginData(string _name, int _level, BigInteger _amountPerTouch, BigInteger _cost)
     {

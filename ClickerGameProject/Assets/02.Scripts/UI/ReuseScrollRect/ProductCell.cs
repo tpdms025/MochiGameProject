@@ -31,56 +31,7 @@ public class ProductCell : UIReuseItemCell
 
     [SerializeField] private GameObject lockPanel;
 
-    #endregion 
-
-
-    public override void UpdateData(int idx, IReuseCellData _cellData , int ClickIndexID = -1)
-    {
-        base.UpdateData(idx, _cellData);
-
-        ProductCellData item = _cellData as ProductCellData;
-        if (item == null)
-            return;
-
-        buyCost = item.cost;
-
-        //UI 갱신
-        preview.name = item.imageName;
-        titleText.text = item.name;
-
-        bool isMaxlevel = item.nextLevel.Equals(item.level);
-        ToggleUIInfo(isMaxlevel);
-        if (isMaxlevel)
-        {
-            levelText.text = String.Format("Lv.MAX");
-            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.jewelPerClick));
-        }
-        else
-        {
-            levelText.text = string.Format("Lv.{0}", item.level);
-            nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
-            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.jewelPerClick));
-            nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextJewelPerClick));
-            buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
-        }
-
-
-        //Debug.Log("ClickIndexID:" + ClickIndexID + " m_Index" + m_Index);
-
-        if (m_Index == ClickIndexID)
-        {
-            bgImage.color = Color.yellow;
-        }
-        else
-        {
-            bgImage.color = Color.white;
-        }
-
-        state = item.cellState;
-        ShowSlotUIForState();
-
-        ChangeUpgradeBtnState(MoneyManager.Instance.Jewel);
-    }
+    #endregion
 
     #region Unity methods
 
@@ -96,13 +47,58 @@ public class ProductCell : UIReuseItemCell
         UnsubscribeFromUpgradeButtonEvents();
     }
 
-    private void OnEnable()
-    {
-    }
-    private void OnDisable()
-    {
-    }
     #endregion
+
+
+    public override void UpdateData(int idx, IReuseCellData _cellData, int ClickIndexID = -1)
+    {
+        base.UpdateData(idx, _cellData);
+
+        ProductCellData item = _cellData as ProductCellData;
+        if (item == null)
+            return;
+
+        buyCost = item.cost;
+
+        //UI 갱신
+        preview.name = item.imageName;
+        titleText.text = item.name;
+
+        bool isMaxlevel = item.nextLevel == item.level;
+        ToggleUI_NextInfo(isMaxlevel);
+        if (isMaxlevel)
+        {
+            levelText.text = string.Format("Lv.MAX");
+            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
+        }
+        else
+        {
+            levelText.text = string.Format("Lv.{0}", item.level);
+            nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
+            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
+            nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
+            buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
+        }
+
+
+        //Debug.Log("ClickIndexID:" + ClickIndexID + " m_Index" + m_Index);
+
+        //선택한 셀 색상 변경
+        if (m_Index == ClickIndexID)
+        {
+            bgImage.color = Color.yellow;
+        }
+        else
+        {
+            bgImage.color = Color.white;
+        }
+
+        state = item.cellState;
+        ShowSlotUIForState();
+
+        ChangeUpgradeBtnState(MoneyManager.Instance.Jewel);
+    }
+
 
 
     /// <summary>
@@ -123,20 +119,21 @@ public class ProductCell : UIReuseItemCell
         if (m_Index == ClickIndexID)
         {
             buyCost = item.cost;
+
             //UI 갱신
-            bool isMaxlevel = item.nextLevel.Equals(item.level);
-            ToggleUIInfo(isMaxlevel);
+            bool isMaxlevel = item.nextLevel == item.level;
+            ToggleUI_NextInfo(isMaxlevel);
             if (isMaxlevel)
             {
                 levelText.text = string.Format("Lv.MAX");
-                jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.jewelPerClick));
+                jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
             }
             else
             {
                 levelText.text = string.Format("Lv.{0}", item.level);
                 nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
-                jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.jewelPerClick));
-                nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextJewelPerClick));
+                jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
+                nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
                 buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
             }
 
@@ -177,7 +174,7 @@ public class ProductCell : UIReuseItemCell
     private void ChangeUpgradeBtnState(BigInteger jewel)
     {
         bool result;
-        if (state.Equals(CellState.Lock))
+        if (state == CellState.Lock)
         {
             result = false;
         }
@@ -214,9 +211,9 @@ public class ProductCell : UIReuseItemCell
 
 
     /// <summary>
-    /// 정보 UI 오브젝트를 키거나 끈다.
+    /// 다음 정보의 UI 오브젝트를 키거나 끈다.
     /// </summary>
-    private void ToggleUIInfo(bool isMaxlevel)
+    private void ToggleUI_NextInfo(bool isMaxlevel)
     {
         m_Button.gameObject.SetActive(!isMaxlevel);
         nextLevelText.gameObject.SetActive(!isMaxlevel);
