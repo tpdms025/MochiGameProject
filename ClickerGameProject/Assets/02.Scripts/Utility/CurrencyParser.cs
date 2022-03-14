@@ -6,9 +6,9 @@ public class CurrencyParser
     #region Data
 
     private const string zero = "0";
-    private static readonly int _asciiA = 65;
-    private static readonly int _asciiZ = 90;
-    private static readonly int _unitSize = 2;
+    //private static readonly int _asciiA = 65;
+    //private static readonly int _asciiZ = 90;
+    private static readonly int _unitSize = 2;  //100 = 1A
 
     /// <summary>
     /// 단위 표현 스타일
@@ -48,6 +48,7 @@ public class CurrencyParser
         int exponent = 0;
 
         string[] partsSplit = num.ToString("E2").Split('+');
+        //Debug.Log(num+"     /"+num.ToString("E2"));
 
         //예외처리
         if (partsSplit.Length < 2)
@@ -59,7 +60,7 @@ public class CurrencyParser
             return zero;
         }
 
-        //몫은 단위 문자열의 인덱스
+        //몫은 단위 - 문자열의 인덱스
         int quotient = exponent / _unitSize;
 
         //예외처리 - 정해진 숫자단위보다 높을 경우 99.99Z 반환
@@ -73,7 +74,7 @@ public class CurrencyParser
             return string.Format("{0}{1}", showNumber, unitString);
         }
 
-        //나머지는 정수부 자릿수 계산에 사용
+        //나머지는 정수부 - 자릿수 계산에 사용
         int remainder = exponent % _unitSize;
 
         //1A 미만은 그냥 표현
@@ -83,7 +84,7 @@ public class CurrencyParser
         }
         else
         {
-            double temp = double.Parse(partsSplit[0].Replace("E", "")) * Mathf.Pow(10, remainder);
+            float temp = float.Parse(partsSplit[0].Replace("E", "")) * Mathf.Pow(10, remainder);
             showNumber = temp.ToString("F2");
         }
 

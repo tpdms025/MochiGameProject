@@ -9,27 +9,38 @@ public class MoneyManager : MonoBehaviour
 
     #region Data
 
-    /// <summary>
     /// 보유하고 있는 보석
-    /// </summary>
-    private BigInteger m_jewel = 0;
+    private BigInteger m_jewel;
 
-    /// <summary>
-    /// 클릭할 때 증가하는 보석량
-    /// </summary>
-    private BigInteger m_jewelPerClick = 0;
+    /// 보유하고 있는 구슬
+    private BigInteger m_marble;
 
-    /// <summary>
-    /// 초당 증가하는 전체 보석량
-    /// </summary>
-    private BigInteger m_totalJewelPerSec = 0;
+    /// 보유하고 있는 코인
+    private BigInteger m_coin;
 
 
 
-    //델리게이트
+
+    ///// 터치할 때 증가하는 보석량
+    //private BigInteger m_jewelPerTouch;
+
+    ///// 초당 증가하는 보석량
+    //private BigInteger m_JewelPerSec;
+
+
+
+
+    /// 터치할 때 증가하는 전체의 보석량
+    public Ability totalJewelPerTouch;
+    /// 초당 증가하는 전체의 보석량
+    public Ability totalJewelPerSec;
+
+
+
+    //값이 변할 때 호출하는 델리게이트
     public event Action<BigInteger> onJewelChanged;
-    public event Action<BigInteger> onJewelPerClickChanged;
-    public event Action<BigInteger> onJewelPerSecChanged;
+    public event Action<BigInteger> onMableChanged;
+    public event Action<BigInteger> onCoinChanged;
 
     #endregion
 
@@ -41,7 +52,8 @@ public class MoneyManager : MonoBehaviour
     public BigInteger Jewel
     {
         get { return m_jewel; } 
-        private set{ m_jewel = value;
+        private set{ 
+            m_jewel = value;
             if (onJewelChanged != null)
             {
                 onJewelChanged(m_jewel);
@@ -50,16 +62,47 @@ public class MoneyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// m_jewelPerClick의 프로퍼티
+    /// m_marble의 프로퍼티
     /// </summary>
-    public BigInteger JewelPerClick
+    public BigInteger Marble
     {
-        get { return m_jewelPerClick; }
-        private set{ m_jewelPerClick = value;
-            if (onJewelPerClickChanged != null)
+        get { return m_marble; }
+        private set
+        {
+            m_marble = value;
+            if (onMableChanged != null)
             {
-                onJewelPerClickChanged(m_jewelPerClick);
+                onMableChanged(m_marble);
             }
+        }
+    }
+
+    /// <summary>
+    /// m_coin의 프로퍼티
+    /// </summary>
+    public BigInteger Coin
+    {
+        get { return m_coin; }
+        private set
+        {
+            m_coin = value;
+            if (onCoinChanged != null)
+            {
+                onCoinChanged(m_coin);
+            }
+        }
+    }
+
+
+
+    /// <summary>
+    /// m_jewelPerTouch의 프로퍼티
+    /// </summary>
+    public BigInteger JewelPerTouch
+    {
+        get { return totalJewelPerTouch.Value; }
+        private set{
+            totalJewelPerTouch.Value = value;
         }
     }
 
@@ -68,24 +111,13 @@ public class MoneyManager : MonoBehaviour
     /// </summary>
     public BigInteger JewelPerSec
     {
-        get { return m_totalJewelPerSec; }
-        private set { m_totalJewelPerSec = value;
-            if (onJewelPerSecChanged != null)
-            {
-                onJewelPerSecChanged(m_totalJewelPerSec);
-            }
+        get { return totalJewelPerSec.Value; }
+        private set {
+            totalJewelPerSec.Value = value;
         }
     }
 
-    /// <summary>
-    /// 보유하고 있는 큐브
-    /// </summary>
-    public BigInteger cube { get; private set; }
-
-    /// <summary>
-    /// 보유하고 있는 구슬
-    /// </summary>
-    public BigInteger marble { get; private set; }
+  
 
     #endregion
 
@@ -119,11 +151,14 @@ public class MoneyManager : MonoBehaviour
     private void Start()
     {
         //TODO: DB 읽어오기
+        //현재 임시
         //
         InitJewel();
-        InitCube();
         InitMarble();
-        JewelPerClick = 1;
+        InitCoin();
+
+        totalJewelPerTouch = new Ability(1);
+        totalJewelPerSec = new Ability(1);
 
         StartCoroutine(Loop_IncreaseJewelPerSec());
     }
@@ -157,17 +192,17 @@ public class MoneyManager : MonoBehaviour
 
     public void AddJewelPerClick(BigInteger _newValue)
     {
-        JewelPerClick += _newValue;
+        JewelPerTouch += _newValue;
     }
 
     public void SubJewelPerClick(BigInteger _newValue)
     {
-        JewelPerClick -= _newValue;
+        JewelPerTouch -= _newValue;
     }
 
     public void InitJewelPerClick()
     {
-        JewelPerClick = 0;
+        JewelPerTouch = 0;
     }
 
 
@@ -194,19 +229,19 @@ public class MoneyManager : MonoBehaviour
 
     #region Modify Cube Function
 
-    public void AddCube(BigInteger _newValue)
+    public void AddCoin(BigInteger _newValue)
     {
-        cube += _newValue;
+        Coin += _newValue;
     }
 
-    public void SubCube(BigInteger _newValue)
+    public void SubCoin(BigInteger _newValue)
     {
-        cube -= _newValue;
+        Coin -= _newValue;
     }
 
-    public void InitCube()
+    public void InitCoin()
     {
-        cube = 0;
+        Coin = 0;
     }
 
     #endregion
@@ -215,17 +250,17 @@ public class MoneyManager : MonoBehaviour
 
     public void AddMarble(BigInteger _newValue)
     {
-        marble += _newValue;
+        Marble += _newValue;
     }
 
     public void SubMarble(BigInteger _newValue)
     {
-        marble -= _newValue;
+        Marble -= _newValue;
     }
 
     public void InitMarble()
     {
-        marble = 0;
+        Marble = 0;
     }
 
     #endregion

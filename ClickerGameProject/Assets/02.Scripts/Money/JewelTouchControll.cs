@@ -44,7 +44,7 @@ public class JewelTouchControll : MonoBehaviour/*, IPointerDownHandler, IPointer
     /// </summary>
     public void OnTouch()
     {
-        MoneyManager.Instance.AddJewel(MoneyManager.Instance.JewelPerClick);
+        MoneyManager.Instance.AddJewel( MoneyManager.Instance.JewelPerTouch);
     }
 
 

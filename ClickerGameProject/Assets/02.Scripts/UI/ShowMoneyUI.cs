@@ -12,11 +12,11 @@ public class ShowMoneyUI : MonoBehaviour
 
     #region Fields
 
-    [SerializeField] private TextMeshProUGUI JewelText;
-    [SerializeField] private TextMeshProUGUI JewelPerClickText;
-    [SerializeField] private TextMeshProUGUI JewelPerSecText;
-    [SerializeField] private TextMeshProUGUI MarbleText;
-    [SerializeField] private TextMeshProUGUI CubeText;
+    [SerializeField] private TextMeshProUGUI jewelText;
+    [SerializeField] private TextMeshProUGUI jewelPerTouchText;
+    [SerializeField] private TextMeshProUGUI jewelPerSecText;
+    [SerializeField] private TextMeshProUGUI marbleText;
+    [SerializeField] private TextMeshProUGUI coinText;
 
     #endregion
 
@@ -37,17 +37,17 @@ public class ShowMoneyUI : MonoBehaviour
     {
         while(true)
         {
-            string strGold = CurrencyParser.ToCurrencyString(MoneyManager.Instance.Jewel);
-            string strGoldPerClick = CurrencyParser.ToCurrencyString(MoneyManager.Instance.JewelPerClick);
-            string strGoldPerSec = CurrencyParser.ToCurrencyString(MoneyManager.Instance.JewelPerSec);
-            string strMarble = CurrencyParser.ToCurrencyString(MoneyManager.Instance.marble);
-            string strCube = CurrencyParser.ToCurrencyString(MoneyManager.Instance.cube);
+            string strJewel = CurrencyParser.ToCurrencyString(MoneyManager.Instance.Jewel);
+            string strJewelPerTouch = CurrencyParser.ToCurrencyString(MoneyManager.Instance.JewelPerTouch);
+            string strJewelPerSec = CurrencyParser.ToCurrencyString(MoneyManager.Instance.JewelPerSec);
+            string strMarble = CurrencyParser.ToCurrencyString(MoneyManager.Instance.Marble);
+            string strCoin = CurrencyParser.ToCurrencyString(MoneyManager.Instance.Coin);
 
-            JewelText.text = string.Format("{0}", strGold);
-            JewelPerClickText.text = string.Format("{0}/Touch", strGoldPerClick);
-            JewelPerSecText.text = string.Format("{0}/s", strGoldPerSec);
-            MarbleText.text = string.Format("{0}", strMarble);
-            CubeText.text = string.Format("{0}", strCube);
+            jewelText.text = string.Format("{0}", strJewel);
+            jewelPerTouchText.text = string.Format("{0}/Touch", strJewelPerTouch);
+            jewelPerSecText.text = string.Format("{0}/s", strJewelPerSec);
+            marbleText.text = string.Format("{0}", strMarble);
+            coinText.text = string.Format("{0}", strCoin);
 
             yield return null;
         }
