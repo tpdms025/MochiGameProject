@@ -41,7 +41,6 @@ public class Popup : MonoBehaviour
         {
             gameObject.SetActive(true);
         }
-        Debug.Log("Close "+gameObject.name);
     }
 
 

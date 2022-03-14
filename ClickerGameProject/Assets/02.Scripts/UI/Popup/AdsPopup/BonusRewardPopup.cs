@@ -12,7 +12,7 @@ public class BonusRewardPopup : PopupWithAds
     private BigInteger addRewardAmount;
 
     //기본 보상량에 곱할 배수
-    private float basicMultiply;
+    private float baseMultiply;
     //추가 보상량에 곱할 배수
     private float addMultiply;
 
@@ -66,9 +66,9 @@ public class BonusRewardPopup : PopupWithAds
     /// </summary>
     private void Initialize()
     {
-        basicMultiply = 20.0f;
+        baseMultiply = 20.0f;
         addMultiply = 2; //******이부분은 강화시스템과 연관지어 데이터 로드할 것.
-        baseRewardAmount = GetBonusReward(basicMultiply);
+        baseRewardAmount = GetBonusReward(baseMultiply);
         addRewardAmount = GetAdditionalBonusReward(addMultiply);
 
         UpdateUI();

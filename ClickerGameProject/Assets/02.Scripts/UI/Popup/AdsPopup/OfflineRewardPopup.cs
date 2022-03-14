@@ -75,9 +75,11 @@ public class OfflineRewardPopup : PopupWithAds
         currentTimeInMinute = OfflineTimeToMinute();
 
         //오프라인 시간이 0이거나 보상이 0일 경우의 예외처리
-        if(currentTimeInMinute == 0 || MoneyManager.Instance.JewelPerClick == 0)
+        if(currentTimeInMinute == 0 || MoneyManager.Instance.JewelPerTouch == 0)
         {
+#if UNITY_EDITOR
             Debug.Log("시간을 받지 못하거나 혹은 보상이 0입니다.");
+#endif
             ToggleOpenOrClose();
             return;
         }
@@ -88,17 +90,17 @@ public class OfflineRewardPopup : PopupWithAds
     }
 
     /// <summary>
-    /// 시간에 비례하여 보상을 가져온다.
+    /// 시간에 비례하여 기본보상을 가져온다.
     /// </summary>
     /// <returns></returns>
     private BigInteger GetRewardForTime(float multiply, int _curTimeInMinute)
     {
-        BigInteger rewardData =  new BigInteger(5 * _curTimeInMinute) * MoneyManager.Instance.JewelPerClick;
+        BigInteger rewardData =  new BigInteger(5 * _curTimeInMinute) * MoneyManager.Instance.JewelPerTouch;
         return rewardData;
     }
 
     /// <summary>
-    /// 시간에 비례하여 보상을 추가로 가져온다.
+    /// 시간에 비례하여 추가보상을 가져온다. (기본보상의 N배)
     /// </summary>
     /// <returns></returns>
     protected BigInteger GetAdditionalRewardForTime(float multiply)
@@ -113,7 +115,7 @@ public class OfflineRewardPopup : PopupWithAds
     /// <returns></returns>
     private int OfflineTimeToMinute()
     {
-        TimeSpan offlineTime = TimerManager.Instance.CalculateTimeOffline();
+        TimeSpan offlineTime = TimerManager.Instance.offlineTimeSpan;
 
         //최대시간 제한두기
         if (offlineTime.TotalMinutes > maxTimeInMinute)
@@ -132,9 +134,12 @@ public class OfflineRewardPopup : PopupWithAds
     {
         //타이머 시간
         curTimeText.text = string.Empty;
-        if (currentTimeInMinute >= 60 )  //시간
+
+        //시간 출력
+        if (currentTimeInMinute >= 60 )
             curTimeText.text += string.Format("{0}Time", currentTimeInMinute / 60);
-        if (currentTimeInMinute % 60 != 0) //분
+        //분 출력
+        if (currentTimeInMinute % 60 != 0)
             curTimeText.text += string.Format(" {0}Minutes", currentTimeInMinute % 60);
 
         fill.fillAmount = (float)currentTimeInMinute / maxTimeInMinute;
