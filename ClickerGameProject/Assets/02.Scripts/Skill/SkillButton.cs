@@ -9,17 +9,23 @@ public class SkillButton : MonoBehaviour
 {
     #region Data
 
-    //스킬 지속시간
-    private float maxSkillTime;
+    //스킬 시간 (초)
+    [SerializeField] private float skillTime;
 
-    private float currentSkillTime;
+    //경과 시간 (초)
+    [SerializeField] private float elapsedTime;
 
-    private float rotateSpeed = 30.0f;
 
-    public event Action OnStartedSkill;
+    //스킬이 시작할 때 발생하는 이벤트 델리게이트
+    //float: 경과 시간
+    public event Action<float> OnStartedSkill;         
+
+    //스킬이 끝날 때 발생하는 이벤트 델리게이트
     public event Action OnFinishedSkill;
 
-    [SerializeField]  private bool isSkillActivate;
+
+    private const float rotateSpeed = 30.0f;
+    [SerializeField] private bool isSkillActivate;
 
     #endregion
 
@@ -35,6 +41,7 @@ public class SkillButton : MonoBehaviour
     [Header("[Temporary]")]
     [SerializeField] private Image circularImage;
 
+    //팝업창 오브젝트
     [SerializeField] private PopupWithAds popup;
 
     #endregion
@@ -46,11 +53,6 @@ public class SkillButton : MonoBehaviour
         button.onClick.AddListener(popup.ToggleOpenOrClose);
     }
 
-    private void Start()
-    {
-        InitData();
-        InitFunc();
-    }
 
     private void OnEnable()
     {
@@ -73,11 +75,34 @@ public class SkillButton : MonoBehaviour
     /// </summary>
     public void TriggerEffect()
     {
-        Debug.Log("TriggerEffect");
         ActivateStateUI();
     }
 
+    /// <summary>
+    /// 데이터를 로드하여 세팅한다.
+    /// </summary>
+    /// <param name="_skillTime"></param>
+    public void LoadData(float curSkillTime, float _skillTime)
+    {
+        elapsedTime = curSkillTime;
+        skillTime = _skillTime;
+        bool prevActivate = elapsedTime == skillTime ? false : true;
+        isSkillActivate = prevActivate;
 
+        Initialize();
+    }
+  
+    private void Initialize()
+    {
+        if (isSkillActivate)
+        {
+            ActivateStateUI();
+        }
+        else
+        {
+            DefaultStateUI();
+        }
+    }
 
     #endregion
 
@@ -113,32 +138,31 @@ public class SkillButton : MonoBehaviour
 
 
     /// <summary>
-    /// 스킬을 활성화한다.
+    /// 스킬을 활성화하여 버프를 발동시킨다.
     /// </summary>
     /// <returns></returns>
     private IEnumerator Cor_SkillsActivation()
     {
-        //버프시작 이벤트 호출
+        //버프 시작 이벤트 호출
         if (OnStartedSkill != null)
         {
-            OnStartedSkill.Invoke();
+            OnStartedSkill.Invoke(elapsedTime);
         }
-        Debug.Log("currentSkillTime"+ currentSkillTime);
 
         //UI 업데이트
-        while (currentSkillTime > 0)
+        while (elapsedTime > 0)
         {
-            Debug.Log("Cor_SkillsActivation");
-            fill.fillAmount = currentSkillTime / maxSkillTime;
-            TimeSpan duration = TimeSpan.FromSeconds(currentSkillTime);
+            fill.fillAmount = elapsedTime / skillTime;
+            TimeSpan duration = TimeSpan.FromSeconds(elapsedTime+1);    //올림을 위해 +1
             cooldownText.text = string.Format("{0:mm\\:ss}", duration);
             //cooldownText.text = string.Format("{0:0}", currentSkillTime);
 
-            currentSkillTime -= Time.deltaTime;
+            elapsedTime -= Time.deltaTime;
+            //Debug.Log("currentSkillTime is " + currentSkillTime);
             yield return null;
         }
 
-        currentSkillTime = maxSkillTime;
+        elapsedTime = skillTime;
 
         //버프 종료 이벤트 호출
         if (OnFinishedSkill != null)
@@ -169,66 +193,7 @@ public class SkillButton : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// 오프라인시간을 계산하며 어플리케이션을 처음 실행할 때
-    /// 스킬이 발동 중인지 확인한다.
-    /// </summary>
-    /// <returns></returns>
-    private bool CheckSkillActivated()
-    {
-        //TODO : DB로드하여 마지막으로 종료할 때 스킬이 발동중인지 확인하는 변수를 가져온다.
-        //************************************
-        //현재는 임시로 true함.
-        bool isPrevSkillActivate = true;
-        if(isPrevSkillActivate.Equals(false))
-        {
-            return false;
-        }
-
-        bool _isSkillActivate;
-        double intervalTime = TimerManager.Instance.CalculateTimeOffline().TotalSeconds;
-        if (0 < intervalTime && intervalTime < maxSkillTime)
-        {
-            //스킬 활성화
-            _isSkillActivate = true;
-            currentSkillTime = maxSkillTime - (float)intervalTime;
-        }
-        else
-        {
-            //스킬 비활성화
-            _isSkillActivate = false;
-            currentSkillTime = maxSkillTime;
-        }
-
-        return _isSkillActivate;
-    }
-
-
-    /// <summary>
-    /// 데이터를 불러와 세팅한다.
-    /// </summary>
-    private void InitData()
-    {
-        //임시값
-        maxSkillTime = 5.0f;
-
-        isSkillActivate = CheckSkillActivated();
-    }
-
-    /// <summary>
-    /// 데이터를 불러와 초기함수를 호출한다.
-    /// </summary>
-    private void InitFunc()
-    {
-        if (isSkillActivate)
-        {
-            ActivateStateUI();
-        }
-        else
-        {
-            DefaultStateUI();
-        }
-    }
+    
 
 
 
