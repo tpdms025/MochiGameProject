@@ -7,17 +7,20 @@ using System.Numerics;
 [Serializable]
 public class Database 
 {
-   public class GoodsInfo
+   
+    public class BuffTable
     {
-        public BigInteger jewel;
-        public BigInteger jewelPerClick;
-        public BigInteger jewelPerSec;
-        public BigInteger marble;
-        public BigInteger cube;
-        public GoodsInfo()
+        public int id;
+        public string name;
+        public int time;
+        public int curTime;
+        public BuffTable(int id, string name, int time, int curTime)
         {
-
+            this.id = id;
+            this.name = name;
+            this.time = time;
+            this.curTime = curTime;
         }
-
     }
+
 }
