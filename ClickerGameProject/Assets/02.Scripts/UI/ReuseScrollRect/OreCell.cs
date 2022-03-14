@@ -12,7 +12,7 @@ public enum CellType { OnePurchase, Upgrade, Observation }
 
 
 
-public class ProductCell : UIReuseItemCell
+public class OreCell : UIReuseItemCell
 {
     private BigInteger buyCost;
 

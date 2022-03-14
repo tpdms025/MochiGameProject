@@ -4,7 +4,7 @@ using System.Numerics;
 using UnityEngine;
 
 // 메인 클래스. 여기서 grid에 데이터를 추가시켜준다.
-public class GUIProductScrollView : MonoBehaviour
+public class GUIOreScrollView : MonoBehaviour
 {
     public UIReuseGrid grid { get; private set; }
 
