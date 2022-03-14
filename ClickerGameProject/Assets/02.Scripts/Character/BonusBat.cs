@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BonusBat : MonoBehaviour
 {
+    [Header("Attribute")]
     //도착 위치
     [SerializeField] private Transform targetPos;
 
@@ -17,10 +18,22 @@ public class BonusBat : MonoBehaviour
     //날고 있는지 여부
     [SerializeField] private bool isFlying = false;
 
-    private IEnumerator coroutine = null;
-
     //객체 터치시 이벤트
     public static Action onObjectTouched;
+
+    [Space(10)]
+    [Header("Spawn")]
+    //기본 스폰 시간
+    private float baseSpawnTime;
+
+    //시간 감소 퍼센트
+    public float reductionPercentage;
+
+    //최종 스폰 시간
+    public float secondsBetweenSpawn;
+
+    //경과 시간
+    [SerializeField]private float elapsedTime;
 
 
 
@@ -29,32 +42,62 @@ public class BonusBat : MonoBehaviour
     private void Awake()
     {
         startPos = transform.position;
+        baseSpawnTime = 150.0f;
+
+        //강화할때 변경될 예정
+        //임시값
+        reductionPercentage = 0.0f;
+        reductionPercentage = 90.0f;
+        ChangeSpawnTime();
+    }
+
+    private void Start()
+    {
+        OnReset();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("NotFlyingZone"))
+        if (isFlying && collision.gameObject.CompareTag("NotFlyingZone"))
         {
-            EndTheFlight();
+            //리셋하기
+            OnReset();
         }
     }
     #endregion
 
 
+    #region Spawn
 
-
-    /// <summary>
-    /// 객체를 이동한다.
-    /// </summary>
-    public void MoveObject()
+    public void ChangeSpawnTime()
     {
-        if (coroutine != null)
-            return;
-
-        coroutine = MoveCosinePath();
-        StartCoroutine(coroutine);
+        secondsBetweenSpawn = baseSpawnTime - (baseSpawnTime * reductionPercentage * 0.01f);
     }
 
+
+    public void OnReset()
+    {
+        EndTheFlight();
+        StartCoroutine(Cor_Timer());
+    }
+
+    private IEnumerator Cor_Timer()
+    {
+        elapsedTime = 0.0f;
+        while (elapsedTime < secondsBetweenSpawn)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        yield return null;
+
+        //박쥐 이동
+        StartCoroutine(MoveCosinePath());
+    }
+
+    #endregion
+
+   
     /// <summary>
     /// 코사인 이동경로로 이동한다.
     /// </summary>
@@ -65,8 +108,19 @@ public class BonusBat : MonoBehaviour
 
         isFlying = true;
         float runningTime = 0;
-        while (isFlying/*Mathf.Abs(distance) >= 1*/ && IsTouchedObject().Equals(false))
+        while (isFlying/*Mathf.Abs(distance) >= 1*/)
         {
+            //객체를 터치했다면 팝업창 열기
+            if(IsTouchedObject())
+            {
+                if (onObjectTouched != null)
+                {
+                    onObjectTouched.Invoke();
+                }
+                OnReset();
+                yield break;
+            }
+
             //distance = Vector3.Distance(transform.position, targetPos.position);
             //Debug.Log("distance" + distance);
             //transform.position = Vector3.Lerp(transform.position, targetPos.position, speed * Time.deltaTime);
@@ -75,13 +129,21 @@ public class BonusBat : MonoBehaviour
             float x = runningTime + startPos.x;
             float y = Mathf.Cos(runningTime);
             transform.position = new Vector3(x, y, transform.position.z);
-            IsTouchedObject();
             yield return null;
         }
 
-        EndTheFlight();
-        yield return null;
+        OnReset();
     }
+
+    /// <summary>
+    /// 비행을 끝내다.
+    /// </summary>
+    private void EndTheFlight()
+    {
+        isFlying = false;
+        transform.position = startPos;
+    }
+
 
     /// <summary>
     /// 객체를 터치했는지 확인한다.
@@ -95,25 +157,12 @@ public class BonusBat : MonoBehaviour
         {
             if (hit.collider.gameObject.tag.Equals("BonusBat"))
             {
-                if (onObjectTouched != null)
-                {
-                    onObjectTouched.Invoke();
-                }
                 return true;
             }
         }
         return false;
     }
 
-    /// <summary>
-    /// 비행을 끝내다.
-    /// </summary>
-    private void EndTheFlight()
-    {
-        isFlying = false;
-        transform.position = startPos;
-        coroutine = null;
-    }
-
+  
    
 }
