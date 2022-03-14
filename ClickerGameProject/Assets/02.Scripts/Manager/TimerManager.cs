@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 public class TimerManager : MonoBehaviour
 {
-    public const string url = "http://www.google.com";
+    public  const string url = "http://www.google.com";
 
     //어플리케이션을 종료한 날짜
     public DateTime lastDateTime { get; private set; }
@@ -16,16 +16,24 @@ public class TimerManager : MonoBehaviour
     //어플리케이션을 실행한 날짜 (현재)
     public DateTime nowDateTime { get; private set; }
 
-    //최대 시간차이
+    //오프라인 시간의 최대 일자
     private const int maxConpareDays = 1;
 
-    //인터넷 연결 여부
-    private bool isConnectedInternet;
+    //오프라인 시간 (최대 1일)
+    public TimeSpan offlineTimeSpan { get; private set; }
 
+
+
+    //인터넷 연결 여부
+    private bool isConnectedInternet = false;
+
+    //인터넷 연결이 실패일 경우 호출하는 이벤트
     public event Action onDisconnectInternet;
 
 
     public static TimerManager Instance { get; private set; }
+
+    #region Unity methods
 
     private void Awake()
     {
@@ -34,6 +42,7 @@ public class TimerManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
+                Debug.Log("DontDestroyOnLoad");
         }
         else
         {
@@ -43,28 +52,7 @@ public class TimerManager : MonoBehaviour
 
     private void Start()
     {
-        if (Application.internetReachability == NetworkReachability.NotReachable)
-        {
-            isConnectedInternet = false;
-            //인터넷 연결이 안되었을 때 행동
-            if (onDisconnectInternet != null)
-                onDisconnectInternet.Invoke();
-        }
-        else
-        {
-            isConnectedInternet = false;
-            //데이터 및 와이파이로 인터넷 연결이 되었을 때 행동
-
-            //StartCoroutine(WebChk());
-
-            //TODO : DB 로드
-            //************************************
-            lastDateTime = new DateTime(2022, 02, 20, 0, 0, 0);
-            nowDateTime = GetGoogleDateTime();
-            Debug.Log("nowDateTime : " + nowDateTime);
-            UnityEngine.SceneManagement.SceneManager.LoadScene(1);
-        }
-        
+        StartCoroutine(CheckInternet());
     }
 
     private void OnApplicationQuit()
@@ -72,6 +60,46 @@ public class TimerManager : MonoBehaviour
         //TODO :DB저장
         //************************************
         lastDateTime = new DateTime(2022, 02, 10, 0, 0, 0);
+    }
+    #endregion
+
+    private IEnumerator CheckInternet()
+    {
+        //TODO :
+        //************************************
+        //GPGS 연동이 되는 시간으로 교체할 것
+        yield return new WaitForSeconds(1.0f);
+
+
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            //인터넷 연결이 안되었을 때 행동
+            isConnectedInternet = false;
+
+            if (onDisconnectInternet != null)
+            {
+                onDisconnectInternet.Invoke();
+                Debug.Log("onDisconnectInternet");
+            }
+        }
+        else
+        {
+            //데이터 및 와이파이로 인터넷 연결이 되었을 때 행동
+            isConnectedInternet = true;
+
+            yield return StartCoroutine(WebChk());
+
+            //TODO : DB 로드
+            //************************************
+            lastDateTime = new DateTime(2022, 02, 28, 15, 0, 0);
+            //nowDateTime = GetGoogleDateTime();
+            //Debug.Log("nowDateTime : " + nowDateTime);
+
+            offlineTimeSpan = CalculateOfflineTime();
+
+            //UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        }
+        yield return null;
     }
 
 
@@ -97,6 +125,11 @@ public class TimerManager : MonoBehaviour
                 Debug.Log("받아온 시간" + date); // GMT로 받아온다.
                 DateTime dateTime = DateTime.Parse(date).ToLocalTime(); // ToLocalTime() 메소드로 한국시간으로 변환시켜 준다.
                 Debug.Log("한국시간으로변환" + dateTime);
+                nowDateTime = dateTime;
+
+                //잠시 임시
+                yield return new WaitForSeconds(2);
+                UnityEngine.SceneManagement.SceneManager.LoadScene(1);
             }
         }
     }
@@ -133,7 +166,7 @@ public class TimerManager : MonoBehaviour
     /// 마지막으로 종료한 시간과 실행한 시간 차이를 계산합니다.
     /// (최대 시간 1일)
     /// </summary>
-    public TimeSpan CalculateTimeOffline()
+    private TimeSpan CalculateOfflineTime()
     {
         //DateTime _lastDateTime = new DateTime(2022, 02, 10, 0, 0, 0);
         //DateTime _nowDateTime = GetGoogleDateTime();
