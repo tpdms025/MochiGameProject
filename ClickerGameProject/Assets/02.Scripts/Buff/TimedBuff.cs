@@ -24,7 +24,8 @@ public abstract class TimedBuff
     public void Tick(float delta)
     {
         duration -= delta;
-        if(duration <= 0)
+        UpdateEffect(delta);
+        if (duration <= 0)
         {
             End();
             isFinished = true;
@@ -42,12 +43,14 @@ public abstract class TimedBuff
 
 
     /// <summary>
-    /// 버프 효과를 적용한다.
+    /// 효과를 적용한다.
     /// </summary>
     protected abstract void ApplyEffect();
 
+    protected abstract void UpdateEffect(float delta);
+
     /// <summary>
-    /// 버프를 끝낸다.
+    /// 효과를 끝낸다.
     /// </summary>
     public abstract void End();
   

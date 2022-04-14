@@ -9,10 +9,10 @@ public class BuffableEntity : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(Cor_CheckBuffs());
+        StartCoroutine(Cor_LoopCheckBuffs());
     }
 
-    private IEnumerator Cor_CheckBuffs()
+    private IEnumerator Cor_LoopCheckBuffs()
     {
         while (true)
         {

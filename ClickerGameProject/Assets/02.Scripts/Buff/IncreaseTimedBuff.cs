@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class IncreaseTimedBuff : TimedBuff
 {
-    public Ability ability;
+    private Ability ability;
+
     public IncreaseTimedBuff(int id, float _duration, Ability _ability) : base(id,_duration)
     {
         ability = _ability;
@@ -15,7 +16,11 @@ public class IncreaseTimedBuff : TimedBuff
     /// </summary>
     protected override void ApplyEffect()
     {
-        ability.m_increaseMult = 3; 
+        ability.m_increaseRate = 3; 
+    }
+
+    protected override void UpdateEffect(float delta)
+    {
     }
 
     /// <summary>
@@ -23,7 +28,7 @@ public class IncreaseTimedBuff : TimedBuff
     /// </summary>
     public override void End()
     {
-        ability.m_increaseMult = 1;
+        ability.m_increaseRate = 1;
     }
 }
 
