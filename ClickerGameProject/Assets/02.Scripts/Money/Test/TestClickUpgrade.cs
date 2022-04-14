@@ -20,6 +20,9 @@ public class TestClickUpgrade : MonoBehaviour
     //한번 업그레이드 할때마다 goldPerClick 변수가 얼만큼 증가할지에 대한 변수
     [SerializeField] private BigInteger goldByUpgrade;
 
+    //이전 업그레이드 매초증가량 값
+    private BigInteger prevGoldByUpgrade= 0;
+
     //처음으로 업그레이드 할때 증가하는 goldPerClick 값
     private BigInteger startGoldByUpgrade = 1;
 
@@ -56,6 +59,9 @@ public class TestClickUpgrade : MonoBehaviour
     {
         LoadDB();
 
+        UpgradeItem();
+        prevGoldByUpgrade = 0;
+        //MoneyManager.Instance.AddJewelPerClick(goldByUpgrade - prevGoldByUpgrade);
         UpdateUI();
     }
 
@@ -75,7 +81,7 @@ public class TestClickUpgrade : MonoBehaviour
             level++;
 
             UpgradeItem();
-            MoneyManager.Instance.AddJewelPerClick(goldByUpgrade);
+            MoneyManager.Instance.AddJewelPerClick(goldByUpgrade - prevGoldByUpgrade);
             UpdateUI();
         }
     }
@@ -90,6 +96,7 @@ public class TestClickUpgrade : MonoBehaviour
     /// </summary>
     public void UpgradeItem()
     {
+        prevGoldByUpgrade = goldByUpgrade;
         //임시로 공식둠.
         goldByUpgrade = startGoldByUpgrade * (BigInteger)Mathf.Pow(upgradePow, level);
         currentCost = startCost * (BigInteger)Mathf.Pow(costPow, level);
@@ -100,9 +107,8 @@ public class TestClickUpgrade : MonoBehaviour
     /// </summary>
     private void UpdateUI()
     {
-        Debug.Log("goldByUpgrade?" + goldByUpgrade);
         string strGoldPer = CurrencyParser.ToCurrencyString(goldByUpgrade);
-        titleText.text = string.Format("{0}", strGoldPer);
+        titleText.text = string.Format("{0}/Touch", strGoldPer);
     }
 
     /// <summary>
@@ -110,10 +116,9 @@ public class TestClickUpgrade : MonoBehaviour
     /// </summary>
     private void LoadDB()
     {
-        level = 1;
+        level = 0;
         currentCost = startCost;
         goldByUpgrade = startGoldByUpgrade;
-
     }
     #endregion
 }
