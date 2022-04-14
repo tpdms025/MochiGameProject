@@ -31,6 +31,11 @@ public class TabController : MonoBehaviour
             {
                 int a = i;
                 m_toggles[i].onValueChanged.AddListener(delegate { OnToggleChanged(m_toggles[a], m_pageList[a].transform); });
+                
+                if(m_toggles[i].isOn)
+                {
+                    OnToggleChanged(m_toggles[a], m_pageList[a].transform);
+                }
             }
         }
     }
@@ -47,7 +52,6 @@ public class TabController : MonoBehaviour
     /// <param name="_scroll"></param>
     public void OnToggleChanged(Toggle _toggle, Transform _scroll)
     {
-        Debug.Log("ToggleTab");
         CloseAllView();
 
         if (_toggle.isOn)

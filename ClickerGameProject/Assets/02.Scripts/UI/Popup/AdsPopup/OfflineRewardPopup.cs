@@ -122,7 +122,6 @@ public class OfflineRewardPopup : PopupWithAds
         {
             offlineTime = new TimeSpan(0, (int)maxTimeInMinute / 60, 0, 0);
         }
-        Debug.Log("Offline time is " + (int)offlineTime.TotalMinutes);
         return (int)offlineTime.TotalMinutes;
     }
 
@@ -137,14 +136,14 @@ public class OfflineRewardPopup : PopupWithAds
 
         //시간 출력
         if (currentTimeInMinute >= 60 )
-            curTimeText.text += string.Format("{0}Time", currentTimeInMinute / 60);
+            curTimeText.text += string.Format("{0}시간", currentTimeInMinute / 60);
         //분 출력
         if (currentTimeInMinute % 60 != 0)
-            curTimeText.text += string.Format(" {0}Minutes", currentTimeInMinute % 60);
+            curTimeText.text += string.Format(" {0}분", currentTimeInMinute % 60);
 
         fill.fillAmount = (float)currentTimeInMinute / maxTimeInMinute;
-        maxTimeText.text = string.Format("Max {0}Time", maxTimeInMinute/60);
+        maxTimeText.text = string.Format("최대 {0}시간", maxTimeInMinute/60);
         rewardText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(baseRewardAmount));
-        addRewardText.text = string.Format("+{0} Add Jewel", CurrencyParser.ToCurrencyString(addRewardAmount));
+        addRewardText.text = string.Format("+{0} 추가 획득", CurrencyParser.ToCurrencyString(addRewardAmount));
     }
 }

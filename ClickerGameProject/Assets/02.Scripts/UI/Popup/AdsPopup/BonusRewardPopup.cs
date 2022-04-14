@@ -98,7 +98,7 @@ public class BonusRewardPopup : PopupWithAds
     /// </summary>
     private void UpdateUI()
     {
-        baseRewardText.text = string.Format("+{0} Gain", CurrencyParser.ToCurrencyString(baseRewardAmount));
-        addRewardText.text = string.Format("+{0} Gain", CurrencyParser.ToCurrencyString(addRewardAmount));
+        baseRewardText.text = string.Format("+{0} È¹µæ", CurrencyParser.ToCurrencyString(baseRewardAmount));
+        addRewardText.text = string.Format("+{0} È¹µæ", CurrencyParser.ToCurrencyString(addRewardAmount));
     }
 }
