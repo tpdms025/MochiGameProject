@@ -8,8 +8,6 @@ using UnityEngine.Networking;
 
 public class TimerManager : MonoBehaviour
 {
-    public  const string url = "http://www.google.com";
-
     //어플리케이션을 종료한 날짜
     public DateTime lastDateTime { get; private set; }
 
@@ -24,11 +22,18 @@ public class TimerManager : MonoBehaviour
 
 
 
-    //인터넷 연결 여부
-    private bool isConnectedInternet = false;
+    //public  const string url = "http://www.google.com";
 
-    //인터넷 연결이 실패일 경우 호출하는 이벤트
-    public event Action onDisconnectInternet;
+    ////인터넷 연결을 체크하는 대기 시간
+    //private const float waitingTime = 5.0f;
+
+    ////인터넷 연결 여부
+    //private bool isConnect;
+
+    ////인터넷 연결이 실패일 경우 호출하는 이벤트
+    //public event Action onDisconnectInternet;
+
+    //[SerializeField] private NetworkPopup popup;
 
 
     public static TimerManager Instance { get; private set; }
@@ -42,7 +47,6 @@ public class TimerManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(this.gameObject);
-                Debug.Log("DontDestroyOnLoad");
         }
         else
         {
@@ -50,10 +54,6 @@ public class TimerManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        StartCoroutine(CheckInternet());
-    }
 
     private void OnApplicationQuit()
     {
@@ -63,42 +63,56 @@ public class TimerManager : MonoBehaviour
     }
     #endregion
 
-    private IEnumerator CheckInternet()
+
+    public IEnumerator LoadDateData()
+    {
+        lastDateTime = new DateTime(2022, 02, 28, 15, 0, 0);
+        nowDateTime = System.DateTime.Now;
+        offlineTimeSpan = CalculateOfflineTime();
+        yield return null;
+    }
+
+    #region Load Google Date
+
+    private void OnDisconnectInternet()
+    {
+        //팝업창 출력
+        //popup.ToggleOpenOrClose();
+    }
+
+    private IEnumerator CheckInternetConnection(Action<bool> syncResult)
     {
         //TODO :
         //************************************
         //GPGS 연동이 되는 시간으로 교체할 것
-        yield return new WaitForSeconds(1.0f);
+        //yield return new WaitForSeconds(1.0f);
 
 
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        bool result;
+        using (UnityWebRequest request = UnityWebRequest.Head(url))
         {
-            //인터넷 연결이 안되었을 때 행동
-            isConnectedInternet = false;
-
-            if (onDisconnectInternet != null)
-            {
-                onDisconnectInternet.Invoke();
-                Debug.Log("onDisconnectInternet");
-            }
+            request.timeout = 10;
+            //URL에 접속하여 결과값을 불러올때까지 대기
+            yield return request.SendWebRequest();
+            //에러가 발생했는지 체크
+            result = !request.isNetworkError && !request.isHttpError && request.responseCode == 200;
         }
-        else
-        {
-            //데이터 및 와이파이로 인터넷 연결이 되었을 때 행동
-            isConnectedInternet = true;
+        syncResult(result);
 
-            yield return StartCoroutine(WebChk());
 
-            //TODO : DB 로드
-            //************************************
-            lastDateTime = new DateTime(2022, 02, 28, 15, 0, 0);
-            //nowDateTime = GetGoogleDateTime();
-            //Debug.Log("nowDateTime : " + nowDateTime);
+        #region test
+        //if (Application.internetReachability == NetworkReachability.NotReachable)
+        //{
+        //    //인터넷 연결이 안되었을 때 행동
+        //}
+        //else
+        //{
+        //    //데이터 및 와이파이로 인터넷 연결이 되었을 때 행동
 
-            offlineTimeSpan = CalculateOfflineTime();
-
-            //UnityEngine.SceneManagement.SceneManager.LoadScene(1);
-        }
+        //    yield return new WaitForSeconds(2);
+        //    UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        //}
+        #endregion
         yield return null;
     }
 
@@ -108,28 +122,25 @@ public class TimerManager : MonoBehaviour
     /// 구글 시간 데이터를 읽어온다.
     /// </summary>
     /// <returns></returns>
-    private IEnumerator WebChk()
+    private IEnumerator LoadWebTime()
     {
-        UnityWebRequest request = new UnityWebRequest();
-        using (request = UnityWebRequest.Get(url))
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.ConnectionError)
             {
                 Debug.Log(request.error);
+                isConnect=false;
             }
             else
             {
+                isConnect=true;
                 string date = request.GetResponseHeader("date"); //이곳에서 반송된 데이터에 시간 데이터가 존재
                 Debug.Log("받아온 시간" + date); // GMT로 받아온다.
                 DateTime dateTime = DateTime.Parse(date).ToLocalTime(); // ToLocalTime() 메소드로 한국시간으로 변환시켜 준다.
                 Debug.Log("한국시간으로변환" + dateTime);
                 nowDateTime = dateTime;
-
-                //잠시 임시
-                yield return new WaitForSeconds(2);
-                UnityEngine.SceneManagement.SceneManager.LoadScene(1);
             }
         }
     }
@@ -160,6 +171,9 @@ public class TimerManager : MonoBehaviour
         }
         return dateTime;
     }
+
+    #endregion
+
 
 
     /// <summary>
