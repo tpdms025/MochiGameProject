@@ -6,6 +6,9 @@ TagManager:
   tags:
   - BonusBat
   - NotFlyingZone
+  - MochiKing
+  - Ore
+  - Projectile
   layers:
   - Default
   - TransparentFX
@@ -13,7 +16,7 @@ TagManager:
   - 
   - Water
   - UI
-  - Particle
+  - Projectile
   - 
   - 
   - 
@@ -45,4 +48,10 @@ TagManager:
     locked: 0
   - name: Character
     uniqueID: 714552567
+    locked: 0
+  - name: Projectile
+    uniqueID: 3656344135
+    locked: 0
+  - name: Particle
+    uniqueID: 729861831
     locked: 0
