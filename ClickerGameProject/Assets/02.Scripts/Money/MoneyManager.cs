@@ -9,31 +9,41 @@ public class MoneyManager : MonoBehaviour
 
     #region Data
 
-    /// 보유하고 있는 보석
+    //보유하고 있는 보석
     private BigInteger m_jewel;
 
-    /// 보유하고 있는 구슬
+    //보유하고 있는 구슬
     private BigInteger m_marble;
 
-    /// 보유하고 있는 코인
+    //보유하고 있는 코인
     private BigInteger m_coin;
 
 
 
-
-    ///// 터치할 때 증가하는 보석량
-    //private BigInteger m_jewelPerTouch;
-
-    ///// 초당 증가하는 보석량
-    //private BigInteger m_JewelPerSec;
-
-
-
-
-    /// 터치할 때 증가하는 전체의 보석량
+    // 터치할 때 증가하는 전체의 보석량
     public Ability totalJewelPerTouch;
-    /// 초당 증가하는 전체의 보석량
+
+    // 초당 증가하는 전체의 보석량
     public Ability totalJewelPerSec;
+
+
+
+
+
+    //보유보석의 문자열
+    public string strJewel;
+
+    //보유구슬의 문자열
+    public string strMarble;
+
+    //보유 코인의 문자열
+    public string strCoin;
+
+    //터치당 보석량의 문자열
+    public string strJewelPerTouch;
+
+    //초당 보석량의 문자열
+    public string strJewelPerSec;
 
 
 
@@ -270,7 +280,7 @@ public class MoneyManager : MonoBehaviour
     #region Private Methods
 
     /// <summary>
-    /// 1초당 골드를 증가시키는 반복문
+    /// 1초마다 보석을 추가하는 반복 함수
     /// </summary>
     /// <returns></returns>
     private IEnumerator Loop_IncreaseJewelPerSec()
@@ -283,6 +293,19 @@ public class MoneyManager : MonoBehaviour
             }
             yield return new WaitForSeconds(1.0f);
         }
+    }
+
+
+    /// <summary>
+    /// 재화를 A-Z단위 문자열로 변환한다.
+    /// </summary>
+    public void ConvertToCurrencyString()
+    {
+        strJewel = CurrencyParser.ToCurrencyString(Jewel);
+        strJewelPerTouch = CurrencyParser.ToCurrencyString(JewelPerTouch);
+        strJewelPerSec = CurrencyParser.ToCurrencyString(JewelPerSec);
+        strMarble = CurrencyParser.ToCurrencyString(Marble);
+        strCoin = CurrencyParser.ToCurrencyString(Coin);
     }
 
     ///// <summary>
