@@ -208,23 +208,24 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
                 candidate = pool.Pop();
             }
 
-            //코드로 Cell Size 조정하는 법. (현재 프리팹에서 조정함.)
+            //(현재 프리팹에서 크기 조정함.)
+            //코드로 Cell Size 조정하는 법.
             // One Cell Prefab, Set PreferredSize as runtime.
-            TempScrollIndexCallbackBase = candidate.GetComponent<UIReuseItemCell>();
-            if (null != TempScrollIndexCallbackBase)
-            {
-                if (m_ScrollRect.horizontal)
-                {
-                    float RandomWidth = m_ReuseBank.GetCellPreferredSize(index).x;
-                    TempScrollIndexCallbackBase.SetLayoutElementPreferredWidth(RandomWidth);
-                }
+            //TempScrollIndexCallbackBase = candidate.GetComponent<UIReuseItemCell>();
+            //if (null != TempScrollIndexCallbackBase)
+            //{
+            //    if (m_ScrollRect.horizontal)
+            //    {
+            //        float RandomWidth = m_ReuseBank.GetCellPreferredSize(index).x;
+            //        TempScrollIndexCallbackBase.SetLayoutElementPreferredWidth(RandomWidth);
+            //    }
 
-                if (m_ScrollRect.vertical)
-                {
-                    float RandomHeight = m_ReuseBank.GetCellPreferredSize(index).y;
-                    TempScrollIndexCallbackBase.SetLayoutElementPreferredHeight(RandomHeight);
-                }
-            }
+            //    if (m_ScrollRect.vertical)
+            //    {
+            //        float RandomHeight = m_ReuseBank.GetCellPreferredSize(index).y;
+            //        TempScrollIndexCallbackBase.SetLayoutElementPreferredHeight(RandomHeight);
+            //    }
+            //}
         }
         else
         {

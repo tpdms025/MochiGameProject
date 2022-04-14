@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using UnityEngine;
 
@@ -8,18 +9,27 @@ public class GUIWorkmanScrollView : MonoBehaviour
     public UIReuseGrid grid { get; private set; }
 
     // 레벨,비용, 증가량.. 등 데이터들
-    private List<List<JewelOriginData>> database;
+    private List<Database.ProductOriginData> database;
 
-    //마지막으로 잠금해제된 Cell의 인덱스 번호
-    [SerializeField] private int curIndex;
-
-    //소유한 셀 레벨에 대한 배열
-    private int[] curLevelList;
+    //셀의 갯수
+    private int cellCount;
 
     //셀 상태에 대한 배열
     private CellState[] states;
 
-    private int cellCount;
+
+
+    #region Property
+
+    ////소유한 셀 레벨에 대한 배열
+    public int[] curLevelList
+    {
+        get { return DBManager.Inst.PlayerData.workmanLevelList; }
+        set { DBManager.Inst.PlayerData.workmanLevelList = value; }
+    }
+
+    #endregion
+
 
 
     private void Awake()
@@ -30,71 +40,94 @@ public class GUIWorkmanScrollView : MonoBehaviour
 
     private void Start()
     {
-        //임시 데이터 (나중에 데이터 로드할 것)
-        database = TempGemInfo();
-        cellCount = database.Count;
+        LoadData();
+        
         InitializeData();
-
-        //그리드에 데이터를 추가
-        for (int i = 0; i < cellCount; ++i)
-        {
-            ProductCellData _cell = temp(i, curLevelList[i]);
-            ////선택한 다음 셀까지 잠금해제
-            //if (i <= curIndex + 1)
-            //    _cell.cellState = CellState.Unlock;
-            //else
-            //    _cell.cellState = CellState.Lock;
-
-            _cell.cellState = states[i];
-            grid.AddItem(_cell);
-        }
-        grid.RefreshAllCell();
     }
 
+    private void OnEnable()
+    {
+        if (grid.m_ScrollRect != null)
+            grid.SrollToCellWithinTime(curLevelList[0]);
+    }
+
+
+
+    private void LoadData()
+    {
+        //임시 데이터 (나중에 데이터 로드할 것)
+        database = DBManager.Inst.GetWorkmanOriginDatas();
+        cellCount = database.Count;
+    }
 
     /// <summary>
     /// 데이터를 초기화한다. (처음데이터)
     /// </summary>
     private void InitializeData()
     {
-        curIndex = 0;
-        curLevelList = new int[cellCount];
-        states =  new CellState[cellCount];
-        states[0] = CellState.Unlock;
+        states = new CellState[cellCount];
+        //states = Enumerable.Repeat(CellState.Unlock, cellCount).ToArray();  //배열의 값을 'unlock'으로 초기화
+         
+        //그리드에 데이터를 추가
+        for (int i = 0; i < cellCount; ++i)     
+        {
+            ProductCellData _cell = temp(i, curLevelList[i]);
+            CellState state;
+
+            if(_cell.level == _cell.nextLevel)          //max state
+            {
+                state = CellState.MaxCompletion;
+            }
+            else                                        //unlock state
+            {
+                state = CellState.Unlock;
+            }
+
+            _cell.cellState = states[i] = state;
+            grid.AddItem(_cell);
+        }
+        grid.RefreshAllCell();
     }
 
     /// <summary>
-    /// 업그레이드
+    /// 업그레이드한 셀만 갱신한다.
     /// </summary>
-    /// <param name="index"></param>
     private void Upgrade(int index)
     {
-        if (cellCount == 0) return;
+        //예외처리
+        if (cellCount == 0) 
+            return;
 
         int curLevel = curLevelList[index];
-        int maxLevel = database[index].Count - 1;
+        int maxLevel = database[index].levelTable.Count - 1;
 
         //레벨이 0 ~ maxLevel 범위가 아닐 경우 리턴
-        if (0 > curLevel || curLevel >= maxLevel) return;
+        if (0 > curLevel || curLevel >= maxLevel) 
+            return;
 
-        //0에서 업그레이드 할 경우
-        if (curLevel == 0 && index < cellCount-1)
+        //0레벨에서 업그레이드할 경우 일꾼을 스폰한다.
+        if (curLevel == 0)
         {
-            //다음 셀을 잠금해제
-            curIndex = index + 1;
-            states[curIndex] = CellState.Unlock;
-            grid.SetItem(curIndex, temp(curIndex, 0));
+            if (WorkmanSpawner.onSpawned != null)
+                WorkmanSpawner.onSpawned(index);
         }
 
-        //***레벨업***
-        //재화 소모
-        MoneyManager.Instance.SubJewel(database[index][curLevel].cost);
-        BigInteger prevAmount = database[index][curLevel].amountPerTouch;
-        curLevel++;
-        BigInteger addAmount = database[index][curLevel].amountPerTouch;
+        //레벨업을 한다.
+        MoneyManager.Instance.SubJewel(database[index].levelTable[curLevel].cost);      //재화 소모
+        BigInteger prevAmount = database[index].levelTable[curLevel].amountPerTouch;
+        ++curLevel;
+        BigInteger addAmount = database[index].levelTable[curLevel].amountPerTouch;
         MoneyManager.Instance.AddJewelPerSec(addAmount - prevAmount);
 
-        //레벨 데이터 저장
+        //최대레벨에 도달할 경우
+        if (curLevel == maxLevel && index < cellCount - 1)
+        {
+            //이번 셀 UI를 Max상태로 업데이트
+            states[index] = CellState.MaxCompletion;
+            grid.SetItem(index, GetCellDataOfMaxLevel(index));
+        }
+
+        //레벨 데이터를 DB에 저장
         curLevelList[index] = curLevel;
 
         //그리드에 데이터 변경
@@ -102,29 +135,28 @@ public class GUIWorkmanScrollView : MonoBehaviour
         grid.SetItem(index, data);
     }
 
-    #region Data Function
+
+    #region Change to CellData
 
     /// <summary>
     /// 원하는 인덱스의 셀 데이터를 가져온다.
     /// </summary>
-    /// <param name="index"></param>
-    /// <param name="level"></param>
-    /// <returns></returns>
     private ProductCellData temp(int index, int level)
     {
         if (index < 0 || index > database.Count) return null;
 
-        int maxLevel = database[index].Count - 1;
+        int maxLevel = database[index].levelTable.Count - 1;
 
         ProductCellData _cell = new ProductCellData();
         _cell.index = index;
-        _cell.name = database[index][level].name;
-        _cell.level = database[index][level].level;
-        _cell.nextLevel = level == maxLevel ? maxLevel : database[index][level + 1].level;
-        _cell.currentAmount = database[index][level].amountPerTouch;
-        _cell.nextAmount = level == maxLevel ? database[index][level].amountPerTouch : database[index][level + 1].amountPerTouch;
-        _cell.cost = database[index][level].cost;
-        _cell.cellState =states[index];
+        _cell.name = database[index].name;
+        _cell.imageName = database[index].spriteName;
+        _cell.level = level;
+        _cell.nextLevel = (level == maxLevel) ? maxLevel : level + 1;
+        _cell.currentAmount = database[index].levelTable[level].amountPerTouch;
+        _cell.nextAmount = (level == maxLevel) ? database[index].levelTable[level].amountPerTouch : database[index].levelTable[level + 1].amountPerTouch;
+        _cell.cost = database[index].levelTable[level].cost;
+        _cell.cellState = states[index];
         return _cell;
     }
 
@@ -132,53 +164,21 @@ public class GUIWorkmanScrollView : MonoBehaviour
     {
         if (index < 0 || index > database.Count) return null;
 
-        int maxLevel = database[index].Count - 1;
+        int maxLevel = database[index].levelTable.Count - 1;
 
         ProductCellData _cell = new ProductCellData();
         _cell.index = index;
-        _cell.name = database[index][maxLevel].name;
-        _cell.level = database[index][maxLevel].level;
+        _cell.name = database[index].name;
+        _cell.imageName = database[index].spriteName;
+        _cell.level = maxLevel;
         _cell.nextLevel = _cell.level;
-        _cell.currentAmount = database[index][maxLevel].amountPerTouch;
+        _cell.currentAmount = database[index].levelTable[maxLevel].amountPerTouch;
         _cell.nextAmount = _cell.currentAmount;
-        _cell.cost = database[index][maxLevel].cost;
+        _cell.cost = database[index].levelTable[maxLevel].cost;
+        _cell.cellState = states[index];
         return _cell;
     }
 
-    #region 엑셀 데이터
-    /// <summary>
-    /// 임시로 DB를 만든다.
-    /// </summary>
-    /// <returns></returns>
-    private List<JewelOriginData> TempGemTable(int num)
-    {
-        int ascii = (int)'A' + num;
-        List<JewelOriginData> _database = new List<JewelOriginData>();
-        for (int i = 0; i < 5; i++)
-        {
-            JewelOriginData data = new JewelOriginData();
-            data.name = System.Convert.ToString(System.Convert.ToChar(ascii));
-            data.level = i;
-            data.amountPerTouch = BigInteger.Pow(2 + num, i);
-            if (i == 0) data.amountPerTouch = 0;
-            data.cost = BigInteger.Pow(3 + num, i);
-            _database.Add(data);
-        }
-        return _database;
-    }
-
-    private List<List<JewelOriginData>> TempGemInfo()
-    {
-        List<List<JewelOriginData>> info = new List<List<JewelOriginData>>();
-        for (int i = 0; i < 10; i++)
-        {
-            string _key = System.Convert.ToString(i + 65);
-            info.Add(TempGemTable(i));
-        }
-        return info;
-    }
-
-    #endregion
 
     #endregion
 

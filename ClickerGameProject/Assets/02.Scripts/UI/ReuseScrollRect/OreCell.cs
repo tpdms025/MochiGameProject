@@ -1,14 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
-
-public enum CellType { OnePurchase, Upgrade, Observation }
+using UnityEngine.U2D;
 
 
 
@@ -20,8 +15,10 @@ public class OreCell : UIReuseItemCell
 
     #region Fields
 
+    [SerializeField] private SpriteAtlas _iconAtlas;
     [SerializeField] private Image bgImage;
-    [SerializeField] private Image preview;
+    [SerializeField] private Image preview_border;
+    [SerializeField] private Image preview_icon;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private TextMeshProUGUI nextLevelText;
@@ -29,7 +26,18 @@ public class OreCell : UIReuseItemCell
     [SerializeField] private TextMeshProUGUI nextJewelPerClickText;
     [SerializeField] private TextMeshProUGUI buyCostText;
 
-    [SerializeField] private GameObject lockPanel;
+    [Header("Color Select")]
+    [Space(10)]
+    private Color32 normalTextColor;
+    [SerializeField] private Color32 maxTextColor;
+    [SerializeField] private Sprite normalBGSprite;
+    [SerializeField] private Sprite normalPreviewSprite;
+    [SerializeField] private Sprite selectedBGSprite;
+    [SerializeField] private Sprite selectedPreviewSprite;
+    [SerializeField] private Transform arrowObj1;
+    [SerializeField] private Transform arrowObj2;
+    private Transform silhouetteSprite;
+    [SerializeField] private Transform lockPanel;
 
     #endregion
 
@@ -39,6 +47,8 @@ public class OreCell : UIReuseItemCell
     {
         base.Awake();
         SubscribeToUpgradeButtonEvents();
+        normalTextColor = levelText.color;
+        silhouetteSprite = preview_icon.transform.Find("Silhouette").transform;
     }
 
     protected override void OnDestroy()
@@ -58,39 +68,24 @@ public class OreCell : UIReuseItemCell
         if (item == null)
             return;
 
+
         buyCost = item.cost;
 
         //UI 갱신
-        preview.name = item.imageName;
-        titleText.text = item.name;
+        preview_icon.sprite = _iconAtlas.GetSprite("Icon_"+item.imageName);
+        ChangeUI(item);
 
-        bool isMaxlevel = item.nextLevel == item.level;
-        ToggleUI_NextInfo(isMaxlevel);
-        if (isMaxlevel)
-        {
-            levelText.text = string.Format("Lv.MAX");
-            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-        }
-        else
-        {
-            levelText.text = string.Format("Lv.{0}", item.level);
-            nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
-            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-            nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
-            buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
-        }
-
-
-        //Debug.Log("ClickIndexID:" + ClickIndexID + " m_Index" + m_Index);
 
         //선택한 셀 색상 변경
         if (m_Index == ClickIndexID)
         {
-            bgImage.color = Color.yellow;
+            bgImage.sprite = selectedBGSprite;
+            preview_border.sprite = selectedPreviewSprite;
         }
         else
         {
-            bgImage.color = Color.white;
+            bgImage.sprite = normalBGSprite;
+            preview_border.sprite = normalPreviewSprite;
         }
 
         state = item.cellState;
@@ -121,27 +116,15 @@ public class OreCell : UIReuseItemCell
             buyCost = item.cost;
 
             //UI 갱신
-            bool isMaxlevel = item.nextLevel == item.level;
-            ToggleUI_NextInfo(isMaxlevel);
-            if (isMaxlevel)
-            {
-                levelText.text = string.Format("Lv.MAX");
-                jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-            }
-            else
-            {
-                levelText.text = string.Format("Lv.{0}", item.level);
-                nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
-                jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-                nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
-                buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
-            }
+            ChangeUI(item);
 
-            bgImage.color = Color.yellow;
+            bgImage.sprite = selectedBGSprite;
+            preview_border.sprite = selectedPreviewSprite;
         }
         else
         {
-            bgImage.color = Color.white;
+            bgImage.sprite = normalBGSprite;
+            preview_border.sprite = normalPreviewSprite;
         }
 
         state = item.cellState;
@@ -186,25 +169,70 @@ public class OreCell : UIReuseItemCell
         m_Button.interactable = result;
     }
 
+    private void ChangeUI(ProductCellData item)
+    {
+        //레벨이 0 (구매 전 상태)
+        if (item.level == 0)
+        {
+            ToggleUI_NextInfo(false);
+            m_Button.gameObject.SetActive(true);
+            silhouetteSprite.gameObject.SetActive(true);
+
+            titleText.text = string.Format("???");
+            levelText.text = string.Format("Lv.{0}", item.level);
+            jewelPerClickText.text = string.Format("???");
+            buyCostText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.cost));
+        }
+        //레벨이 max
+        else if (item.nextLevel == item.level)
+        {
+            ToggleUI_NextInfo(false);
+            m_Button.gameObject.SetActive(false);
+            silhouetteSprite.gameObject.SetActive(false);
+
+            titleText.text = item.name;
+            levelText.text = string.Format("Lv.MAX");
+            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
+        }
+        else
+        {
+            ToggleUI_NextInfo(true);
+            m_Button.gameObject.SetActive(true);
+            silhouetteSprite.gameObject.SetActive(false);
+
+            titleText.text = item.name;
+            levelText.text = string.Format("Lv.{0}", item.level);
+            jewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
+            nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
+            nextJewelPerClickText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
+            buyCostText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.cost));
+        }
+    }
+
     /// <summary>
     /// 상태에 대한 슬롯 UI를 보여준다.
     /// </summary>
     /// <param name="_state"></param>
     private void ShowSlotUIForState()
     {
-
         switch (state)
         {
             case CellState.Lock:
-                lockPanel.SetActive(true);
+                lockPanel.gameObject.SetActive(true);
+                levelText.color = normalTextColor;
+                jewelPerClickText.color = normalTextColor;
                 break;
 
             case CellState.Unlock:
-                lockPanel.SetActive(false);
+                lockPanel.gameObject.SetActive(false);
+                levelText.color = normalTextColor;
+                jewelPerClickText.color = normalTextColor;
                 break;
 
             case CellState.MaxCompletion:
-                lockPanel.SetActive(false);
+                lockPanel.gameObject.SetActive(false);
+                levelText.color = maxTextColor;
+                jewelPerClickText.color = maxTextColor;
                 break;
         }
     }
@@ -213,11 +241,12 @@ public class OreCell : UIReuseItemCell
     /// <summary>
     /// 다음 정보의 UI 오브젝트를 키거나 끈다.
     /// </summary>
-    private void ToggleUI_NextInfo(bool isMaxlevel)
+    private void ToggleUI_NextInfo(bool turnOn)
     {
-        m_Button.gameObject.SetActive(!isMaxlevel);
-        nextLevelText.gameObject.SetActive(!isMaxlevel);
-        nextJewelPerClickText.gameObject.SetActive(!isMaxlevel);
+        nextLevelText.gameObject.SetActive(turnOn);
+        nextJewelPerClickText.gameObject.SetActive(turnOn);
+        arrowObj1.gameObject.SetActive(turnOn);
+        arrowObj2.gameObject.SetActive(turnOn);
     }
 
 

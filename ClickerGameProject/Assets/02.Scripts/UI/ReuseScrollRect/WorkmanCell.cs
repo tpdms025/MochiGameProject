@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.U2D;
 
 public class WorkmanCell : UIReuseItemCell
 {
@@ -13,8 +13,9 @@ public class WorkmanCell : UIReuseItemCell
 
     #region Fields
 
+    [SerializeField] private SpriteAtlas _iconAtlas;
     [SerializeField] private Image bgImage;
-    [SerializeField] private Image preview;
+    [SerializeField] private Image preview_icon;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private TextMeshProUGUI nextLevelText;
@@ -22,7 +23,13 @@ public class WorkmanCell : UIReuseItemCell
     [SerializeField] private TextMeshProUGUI nextJewelPerSecText;
     [SerializeField] private TextMeshProUGUI buyCostText;
 
-    [SerializeField] private GameObject lockPanel;
+    [Header("Color Select")]
+    [Space(10)]
+    private Color32 normalTextColor;
+    [SerializeField] private Color32 maxTextColor;
+    [SerializeField] private Transform arrowObj1;
+    [SerializeField] private Transform arrowObj2;
+    private Transform silhouetteSprite;
 
     #endregion
 
@@ -32,6 +39,8 @@ public class WorkmanCell : UIReuseItemCell
     {
         base.Awake();
         SubscribeToUpgradeButtonEvents();
+        normalTextColor = levelText.color;
+        silhouetteSprite = preview_icon.transform.Find("Silhouette").transform;
     }
 
     protected override void OnDestroy()
@@ -53,24 +62,9 @@ public class WorkmanCell : UIReuseItemCell
         buyCost = item.cost;
 
         //UI 갱신
-        preview.name = item.imageName;
-        titleText.text = item.name;
+        preview_icon.sprite = _iconAtlas.GetSprite("Icon_"+item.imageName);
+        ChangeUI(item);
 
-        bool isMaxlevel = item.nextLevel.Equals(item.level);
-        ToggleUI_NextInfo(isMaxlevel);
-        if (isMaxlevel)
-        {
-            levelText.text = string.Format("Lv.MAX");
-            jewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-        }
-        else
-        {
-            levelText.text = string.Format("Lv.{0}", item.level);
-            nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
-            jewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-            nextJewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
-            buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
-        }
 
         //Debug.Log("ClickIndexID:" + ClickIndexID + " m_Index" + m_Index);
 
@@ -103,21 +97,7 @@ public class WorkmanCell : UIReuseItemCell
             buyCost = item.cost;
 
             //UI 갱신
-            bool isMaxlevel = item.nextLevel.Equals(item.level);
-            ToggleUI_NextInfo(isMaxlevel);
-            if (isMaxlevel)
-            {
-                levelText.text = string.Format("Lv.MAX");
-                jewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-            }
-            else
-            {
-                levelText.text = string.Format("Lv.{0}", item.level);
-                nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
-                jewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
-                nextJewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
-                buyCostText.text = string.Format("Level Up<br>{0}", CurrencyParser.ToCurrencyString(item.cost));
-            }
+            ChangeUI(item);
         }
 
 
@@ -148,17 +128,50 @@ public class WorkmanCell : UIReuseItemCell
     /// <param name="jewel"></param>
     private void ChangeUpgradeBtnState(BigInteger jewel)
     {
-        bool result;
-        if (state == CellState.Lock)
+        //구매할 수 있는지 판별
+        bool result = jewel >= buyCost ? true : false;
+
+        m_Button.interactable = result;
+    }
+
+    private void ChangeUI(ProductCellData item)
+    {
+        //레벨이 0 (구매 전 상태)
+        if (item.level == 0)
         {
-            result = false;
+            ToggleUI_NextInfo(false);
+            m_Button.gameObject.SetActive(true);
+            silhouetteSprite.gameObject.SetActive(true);
+
+            titleText.text = string.Format("???");
+            levelText.text = string.Format("Lv.{0}", item.level);
+            jewelPerSecText.text = string.Format("???");
+            buyCostText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.cost));
+        }
+        //레벨이 max
+        else if (item.nextLevel == item.level)
+        {
+            ToggleUI_NextInfo(false);
+            m_Button.gameObject.SetActive(false);
+            silhouetteSprite.gameObject.SetActive(false);
+
+            titleText.text = item.name;
+            levelText.text = string.Format("Lv.MAX");
+            jewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
         }
         else
         {
-            //구매할 수 있는지 판별
-            result = jewel >= buyCost ? true : false;
+            ToggleUI_NextInfo(true);
+            m_Button.gameObject.SetActive(true);
+            silhouetteSprite.gameObject.SetActive(false);
+
+            titleText.text = item.name;
+            levelText.text = string.Format("Lv.{0}", item.level);
+            jewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.currentAmount));
+            nextLevelText.text = string.Format("Lv.{0}", item.nextLevel);
+            nextJewelPerSecText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.nextAmount));
+            buyCostText.text = string.Format("{0}", CurrencyParser.ToCurrencyString(item.cost));
         }
-        m_Button.interactable = result;
     }
 
     /// <summary>
@@ -170,15 +183,18 @@ public class WorkmanCell : UIReuseItemCell
         switch (state)
         {
             case CellState.Lock:
-                lockPanel.SetActive(true);
+                levelText.color = normalTextColor;
+                jewelPerSecText.color = normalTextColor;
                 break;
 
             case CellState.Unlock:
-                lockPanel.SetActive(false);
+                levelText.color = normalTextColor;
+                jewelPerSecText.color = normalTextColor;
                 break;
 
             case CellState.MaxCompletion:
-                lockPanel.SetActive(false);
+                levelText.color = maxTextColor;
+                jewelPerSecText.color = maxTextColor;
                 break;
         }
     }
@@ -187,11 +203,13 @@ public class WorkmanCell : UIReuseItemCell
     /// <summary>
     /// 다음 정보의 UI 오브젝트를 키거나 끈다.
     /// </summary>
-    private void ToggleUI_NextInfo(bool isMaxlevel)
+    private void ToggleUI_NextInfo(bool turnOn)
     {
-        m_Button.gameObject.SetActive(!isMaxlevel);
-        nextLevelText.gameObject.SetActive(!isMaxlevel);
-        nextJewelPerSecText.gameObject.SetActive(!isMaxlevel);
+        m_Button.gameObject.SetActive(turnOn);
+        nextLevelText.gameObject.SetActive(turnOn);
+        nextJewelPerSecText.gameObject.SetActive(turnOn);
+        arrowObj1.gameObject.SetActive(turnOn);
+        arrowObj2.gameObject.SetActive(turnOn);
     }
 
 
