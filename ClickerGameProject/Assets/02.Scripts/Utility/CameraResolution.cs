@@ -13,7 +13,7 @@ public class CameraResolution : MonoBehaviour
     public Vector2 targetResolution;
     private int PixelPerUnit = 100;
 
-    private void Start()
+    private void Awake()
     {
         if (targetSprite == null)
             return;
@@ -44,11 +44,12 @@ public class CameraResolution : MonoBehaviour
 
         #endregion
 
+        //Camera.main.orthographicSize = targetResolution.x * Screen.height / Screen.width  * 0.5f / PixelPerUnit;
 
-        //Camera.main.orthographicSize = targetResolution.x * Screen.height * 0.5f / Screen.width / PixelPerUnit;
-        Camera.main.orthographicSize *= Camera.main.rect.position.y;
+        //카메라의 viewport rect까지 계산
+        Camera.main.orthographicSize *= 1.0f-Camera.main.rect.position.y;
 
-        //카메라 하단 기준으로 스프라이트 위치를 배치
+        //스프라이트 위치를 카메라 하단에 배치
         Vector3 centerPos = new Vector3(targetSprite.transform.position.x, targetSprite.transform.position.y, transform.position.z);
         Vector3 distDiff = new Vector3(0, Camera.main.orthographicSize - targetSprite.bounds.size.y * 0.5f, 0);
         transform.position = centerPos + distDiff;
