@@ -46,6 +46,7 @@ public class PooledObject
         }
 
         GameObject item = poolList[0];
+        item.SetActive(true);
         poolList.RemoveAt(0);
         return item;
     }
