@@ -5,11 +5,6 @@ using UnityEngine;
 
 public class ShowMoneyUI : MonoBehaviour
 {
-    #region Data
-
-
-    #endregion
-
     #region Fields
 
     [SerializeField] private TextMeshProUGUI jewelText;
@@ -35,19 +30,17 @@ public class ShowMoneyUI : MonoBehaviour
     /// <returns></returns>
     private IEnumerator Cor_UpdateCurrencyText()
     {
-        while(true)
+        while (true)
         {
-            string strJewel = CurrencyParser.ToCurrencyString(MoneyManager.Instance.Jewel);
-            string strJewelPerTouch = CurrencyParser.ToCurrencyString(MoneyManager.Instance.JewelPerTouch);
-            string strJewelPerSec = CurrencyParser.ToCurrencyString(MoneyManager.Instance.JewelPerSec);
-            string strMarble = CurrencyParser.ToCurrencyString(MoneyManager.Instance.Marble);
-            string strCoin = CurrencyParser.ToCurrencyString(MoneyManager.Instance.Coin);
+            //재화를 문자열로 변환
+            MoneyManager.Instance.ConvertToCurrencyString();
 
-            jewelText.text = string.Format("{0}", strJewel);
-            jewelPerTouchText.text = string.Format("{0}/Touch", strJewelPerTouch);
-            jewelPerSecText.text = string.Format("{0}/s", strJewelPerSec);
-            marbleText.text = string.Format("{0}", strMarble);
-            coinText.text = string.Format("{0}", strCoin);
+            //텍스트 출력
+            jewelText.text = string.Format("{0}", MoneyManager.Instance.strJewel);
+            jewelPerTouchText.text = string.Format("{0}/Touch", MoneyManager.Instance.strJewelPerTouch);
+            jewelPerSecText.text = string.Format("{0}/s", MoneyManager.Instance.strJewelPerSec);
+            marbleText.text = string.Format("{0}", MoneyManager.Instance.strMarble);
+            coinText.text = string.Format("{0}", MoneyManager.Instance.strCoin);
 
             yield return null;
         }
