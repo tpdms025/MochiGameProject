@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: OreAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 9c05718a6e049cf4ba066ef88da94a8f, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: dd244b60fdb8334449c4447126537395, type: 3}
+  - {fileID: 21300000, guid: f73801c0300542a41a5b1767f59b9d80, type: 3}
+  - {fileID: 21300000, guid: 5c6921e01fc6e6e4ba5c6f5c009aa8fc, type: 3}
+  - {fileID: 21300000, guid: fb899741d67e8c04ba5adbb2af009cd8, type: 3}
+  - {fileID: 21300000, guid: 2f72b113d4e12564c8bfd504a2e59866, type: 3}
+  - {fileID: 21300000, guid: 39330a83ff286264ab13b5d11c874d30, type: 3}
+  - {fileID: 21300000, guid: cb0a15a3a61139d4f815c5cef119c535, type: 3}
+  - {fileID: 21300000, guid: 7de09a5a6204ddd43aeff7fd227d09a4, type: 3}
+  - {fileID: 21300000, guid: 033bb95b4b2cb4c47bbc796d1741ff5b, type: 3}
+  - {fileID: 21300000, guid: 78a5071cc42abb24d8d6847aae1a5b1f, type: 3}
+  - {fileID: 21300000, guid: 0cf6ea0e36e59e14399106215d27fd46, type: 3}
+  - {fileID: 21300000, guid: 540e115e0e40ce047ae33c6d6c6fcac6, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Ore_Ametrine
+  - Ore_Cobalt
+  - Ore_Peridot
+  - Ore_Diamond
+  - Ore_Ruby
+  - Ore_BlueZircon
+  - Ore_Fever
+  - Ore_Citrine
+  - Ore_Iolite
+  - Ore_PinkSapphire
+  - Ore_LightColorado
+  - Ore_Emerald
+  m_RenderDataMap: {}
+  m_Tag: OreAtlas
+  m_IsVariant: 0
