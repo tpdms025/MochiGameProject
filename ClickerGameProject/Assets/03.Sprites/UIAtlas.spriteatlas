@@ -26,7 +26,7 @@ SpriteAtlas:
       padding: 4
       blockOffset: 1
       allowAlphaSplitting: 0
-      enableRotation: 0
+      enableRotation: 1
       enableTightPacking: 0
       enableAlphaDilation: 0
     secondaryTextureSettings: {}
@@ -41,116 +41,120 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 69b7dd10821055a478f7ae678743fd6d, type: 3}
+  - {fileID: 21300000, guid: fcfea750a05e69343a64e77a1cdbe2f5, type: 3}
   - {fileID: 21300000, guid: 4fd9fc50c2cec8c4c9df387840a6fd14, type: 3}
   - {fileID: 21300000, guid: 917b62907e3fca842b9d41b1def03279, type: 3}
-  - {fileID: 21300000, guid: a8576a615f1930247860432692ca023d, type: 3}
   - {fileID: 21300000, guid: f5288c91b8e823a439e4fa8cb953cd2f, type: 3}
   - {fileID: 21300000, guid: b47dec9171b438247baf9c3a476c3729, type: 3}
   - {fileID: 21300000, guid: 9040cac13779e9845a0deb5cea0c51f1, type: 3}
-  - {fileID: 21300000, guid: dd43120299e15034488630f0920565ea, type: 3}
+  - {fileID: 21300000, guid: f2e983426fe342547b7eb103ea204c75, type: 3}
+  - {fileID: 21300000, guid: bdf83472ffe47694c9133c59b1216c8c, type: 3}
   - {fileID: 21300000, guid: dbfb9082f671a834b8cf45d381f8600d, type: 3}
   - {fileID: 21300000, guid: 6ebb14b2c86b1b944ad60a49e2cca44b, type: 3}
   - {fileID: 21300000, guid: 0acdd43301f289c48b93fe7204d5d099, type: 3}
   - {fileID: 21300000, guid: f617ba535faeec54d9aa9513924367d3, type: 3}
   - {fileID: 21300000, guid: 8a902563e3dba6c4494db5b2ecb9fbc7, type: 3}
-  - {fileID: 21300000, guid: 727472d370090f941b327629c68d345d, type: 3}
   - {fileID: 21300000, guid: d9bee0345f3c55748a33d946ae9ac4bc, type: 3}
   - {fileID: 21300000, guid: 30654b342d4204d48baf812d9ed81b1b, type: 3}
   - {fileID: 21300000, guid: 4bbbe7743e55ed24bb959b6fb8603ab6, type: 3}
   - {fileID: 21300000, guid: feebf87475fcac34aa086d72911b6007, type: 3}
   - {fileID: 21300000, guid: 98629b748208cad4bb5397565747eba1, type: 3}
+  - {fileID: 21300000, guid: d4b552a4c26a1544d84a9025af91f678, type: 3}
   - {fileID: 21300000, guid: 3eeac3d4d9daeec4a83a1ed32ccd625b, type: 3}
   - {fileID: 21300000, guid: c9add62529aafb34480d48af9e9bd2b0, type: 3}
   - {fileID: 21300000, guid: ea8eb9753aee2844290580a215918187, type: 3}
+  - {fileID: 21300000, guid: 0df689c547855994ab83cf7a5c69f6ec, type: 3}
   - {fileID: 21300000, guid: bddad1d5630950441844072b95063105, type: 3}
   - {fileID: 21300000, guid: 5fc183d50adecac4aadb26270bb2510e, type: 3}
   - {fileID: 21300000, guid: e2e6a366586e4d940a1120aec890627b, type: 3}
-  - {fileID: 21300000, guid: 0f4da4f687d44f649b10651838a0b4ae, type: 3}
+  - {fileID: 21300000, guid: 007e76d699ea1c74c904775581c900ef, type: 3}
   - {fileID: 21300000, guid: a9ce3017101cfa846bb5b2b444f30c6c, type: 3}
   - {fileID: 21300000, guid: ef457be7fb9da2949a56fd1dd464aa82, type: 3}
-  - {fileID: 21300000, guid: 8e582318ded485f479c5964aab016796, type: 3}
   - {fileID: 21300000, guid: c93850293c6628942b211ca5535ccc74, type: 3}
-  - {fileID: 21300000, guid: dbf8a75929bba1e45948031bcdbccabf, type: 3}
   - {fileID: 21300000, guid: be4c4389b939b6a4abe6bbba4dc15845, type: 3}
   - {fileID: 21300000, guid: bce468b9cb023404192c86c892eb83aa, type: 3}
   - {fileID: 21300000, guid: 876e4ec9f4f45704f8e6b238cdbcbe64, type: 3}
   - {fileID: 21300000, guid: b38511f93b4ece34fb9b85539540ab28, type: 3}
   - {fileID: 21300000, guid: 047cd90a230ff744c847878ede024802, type: 3}
-  - {fileID: 21300000, guid: 6b68a62ab676b184eb51b038e3cbc63b, type: 3}
   - {fileID: 21300000, guid: b5319c8aaf354ba48a50963e50f95f98, type: 3}
+  - {fileID: 21300000, guid: c86943aa8029eb24a8fe74d22cadfcf4, type: 3}
   - {fileID: 21300000, guid: f24a36aacbc091942aee4e8c5f71deef, type: 3}
   - {fileID: 21300000, guid: 6b0e6faa8992b39438d0630fc760c69d, type: 3}
   - {fileID: 21300000, guid: a82392fa8710fa940aff3b5270f6bf6a, type: 3}
-  - {fileID: 21300000, guid: d15eaa0b5a8fc904ca6ced59e10c93d6, type: 3}
   - {fileID: 21300000, guid: 5caf336b35712ee4e8d8ed140f697102, type: 3}
-  - {fileID: 21300000, guid: c941059bf2402364d890290a4cc90c84, type: 3}
+  - {fileID: 21300000, guid: 6a7f72bb2d0b95447863b1935bac42de, type: 3}
   - {fileID: 21300000, guid: 719e990c2652a16469e07aa12221b44c, type: 3}
-  - {fileID: 21300000, guid: f36f227c073b1bf4abdb5e8ec6224752, type: 3}
   - {fileID: 21300000, guid: 30bf42dc82d9bf1468d6662822e440d1, type: 3}
+  - {fileID: 21300000, guid: 7a4ff9ec23f8644479ef8d2eb993dc81, type: 3}
   - {fileID: 21300000, guid: 87eb6a7dc27ad584dadfa8c39dafff60, type: 3}
+  - {fileID: 21300000, guid: 0945ed8dc4596dc4f9d01fcfbd8c5802, type: 3}
   - {fileID: 21300000, guid: e9edc9bd67723054290736612b4082df, type: 3}
+  - {fileID: 21300000, guid: 6de205dd044571f4d8ba0b4f620e0d99, type: 3}
   - {fileID: 21300000, guid: ec1478edff5191740903decd44c669f1, type: 3}
   - {fileID: 21300000, guid: a1bc670ecab878943ab70ea59b9b3e45, type: 3}
   - {fileID: 21300000, guid: 221b222e8a3274641acb3fb90605ecf7, type: 3}
-  - {fileID: 21300000, guid: 740797de16a7862469e584cc3fe52a40, type: 3}
+  - {fileID: 21300000, guid: 6e143e7e8553bda4aaadd1a9183bad6b, type: 3}
   - {fileID: 21300000, guid: 9ea267ee6773dc74796d4cf1c3edaecd, type: 3}
   - {fileID: 21300000, guid: df69891fe0d0ad148ba20c8ff41f3519, type: 3}
+  - {fileID: 21300000, guid: 0239098f422a2604fa72c980643bb34c, type: 3}
   m_PackedSpriteNamesToIndex:
   - Dialog_Icon_Jewel
+  - Tab4_Mochi_Activate
   - Fever_Bar_Border
   - ListCell_Background_Deactivate
-  - Tab5_Mochi_Deactivate
   - Dialog_Image_Wifi
   - Icon_Ore_Fever_Gray
   - Skill_Icon_Auto
-  - Tab5_Ore_Activate
+  - Tab4_Reinforce_Deactivate
+  - Tab4_Revive_Activate
   - ListCell_Button_Deactivate
   - Per_Touch_Background
   - Skill_Border
   - Money_Marble_Background
   - Dialog_Background
-  - Tab5_Ore_Deactivate
   - Dialog_Icon_AD
   - ListCell_Arrow
   - SpecialDialog_TitleDesign
   - Dialog_Icon_Time
   - Dialog_Button_Close
+  - ListCell_Line_Deactivate
   - Buff_Icon_Work
   - ListBackground
   - ListCell_Background_Modal
+  - Tab4_Ore_Activate
   - Buff_Border
   - Money_Coin_Background
   - Dialog_Button_AD
-  - Tab5_Shop_Deactivate
+  - Tab4_Ore_Deactivate
   - Dialog_Progressbar_Background
   - ListCell_Button_Normal
-  - Tab5_Revive_Activate
   - Dialog_Progressbar_Bar
-  - Tab5_Shop_Activate
   - ListCell_Preview_Border_Deactivate
   - Buff_Icon_Touch
   - SkillBuff_Background
   - Dialog_Button_Confirm
   - Money_Jewel_Background
-  - Tab5_Reinforce_Deactivate
   - ListCell_Button_Jewel
+  - Tab4_Mochi_Deactivate
   - Icon_Ore_Fever
   - Fever_Bar_Rainbow
   - Fever_Bar_Gray
-  - Dialog_Image_Bat
   - Dialog_Image_Touch
-  - Tab5_Revive_Deactivate
+  - Tab4_Revive_Deactivate
   - Dialog_Image_Mochi
-  - Tab5_Reinforce_Activate
   - ListCell_Preview_Border_Activate
+  - Money_Jewel
   - ListCell_Background_Activate
+  - ListCell_Line_Activate
   - SkillBuff_Border_Deactivate
+  - Prestige_Background
   - SkillBuff_Shadow
   - SpecialDialog_Border
   - Per_Mochi_Background
-  - Tab5_Mochi_Activate
+  - Tab4_Reinforce_Activate
   - Fever_Shadow
   - SkillBuff_Progressbar
+  - Prestige_Information
   m_RenderDataMap: {}
   m_Tag: UIAtlas
   m_IsVariant: 0

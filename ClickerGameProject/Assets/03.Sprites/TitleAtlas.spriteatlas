@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TitleAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 67858fb98b7ec2644bfc01b867cc7a1c, type: 3}
+    - {fileID: 2800000, guid: 701b6675fc3f4a343bd4ef7990850b49, type: 3}
+    - {fileID: 2800000, guid: 3f14087d337664f4b82b5b5cc66eed99, type: 3}
+    - {fileID: 2800000, guid: dd6842b1960183348a0290c8950ea1cb, type: 3}
+    - {fileID: 2800000, guid: 6757aa415f4491147a33f08c10d58aa4, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 6757aa415f4491147a33f08c10d58aa4, type: 3}
+  - {fileID: 21300000, guid: dd6842b1960183348a0290c8950ea1cb, type: 3}
+  - {fileID: 21300000, guid: 701b6675fc3f4a343bd4ef7990850b49, type: 3}
+  - {fileID: 21300000, guid: 67858fb98b7ec2644bfc01b867cc7a1c, type: 3}
+  - {fileID: 21300000, guid: 3f14087d337664f4b82b5b5cc66eed99, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Title_Progressbar_Bar
+  - Title_Progressbar_Background
+  - Title_Background
+  - Title_Logo1
+  - Title_Mochi
+  m_RenderDataMap: {}
+  m_Tag: TitleAtlas
+  m_IsVariant: 0
