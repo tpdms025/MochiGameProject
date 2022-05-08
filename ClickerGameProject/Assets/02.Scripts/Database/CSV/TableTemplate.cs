@@ -24,11 +24,11 @@ public class TableTemplate<T> : CSVParser
     {
         _baseFileName = fileName;
     }
-    public override void Load()
+    public override void Load(ref string str)
     {
         try  // exception by jade
         {
-            LoadFile(_baseFileName);
+            LoadFile(_baseFileName, ref str);
         }
         catch (Exception e)
         {

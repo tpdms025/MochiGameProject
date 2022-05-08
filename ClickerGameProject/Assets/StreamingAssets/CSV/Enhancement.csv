@@ -1,0 +1,66 @@
+ID,TypeNum,Gem_Name,Sprite_Name,Level,Cost,Amount,Description
+0,1,근력,Enhancement_Strength,1,0,1,터치당 보석 획득량 증가
+1,1,근력,Enhancement_Strength,2,200,2,터치당 보석 획득량 증가
+2,1,근력,Enhancement_Strength,3,800,4,터치당 보석 획득량 증가
+3,1,근력,Enhancement_Strength,4,2400,8,터치당 보석 획득량 증가
+4,1,근력,Enhancement_Strength,5,6400,16,터치당 보석 획득량 증가
+5,2,향기로운 캣잎,Enhancement_Cat,1,0,32,모찌냥 생산량 증가
+6,2,향기로운 캣잎,Enhancement_Cat,2,200,64,모찌냥 생산량 증가
+7,2,향기로운 캣잎,Enhancement_Cat,3,800,128,모찌냥 생산량 증가
+8,2,향기로운 캣잎,Enhancement_Cat,4,2400,256,모찌냥 생산량 증가
+9,2,향기로운 캣잎,Enhancement_Cat,5,6400,512,모찌냥 생산량 증가
+10,3,든든한 건초,Enhancement_Rabbit,1,0,1024,모찌묘 생산량 증가
+11,3,든든한 건초,Enhancement_Rabbit,2,200,2048,모찌묘 생산량 증가
+12,3,든든한 건초,Enhancement_Rabbit,3,800,4096,모찌묘 생산량 증가
+13,3,든든한 건초,Enhancement_Rabbit,4,2400,8192,모찌묘 생산량 증가
+14,3,든든한 건초,Enhancement_Rabbit,5,6400,16384,모찌묘 생산량 증가
+15,4,강철 가시,Enhancement_Hedgehog,1,0,32768,모찌도치 생산량 증가
+16,4,강철 가시,Enhancement_Hedgehog,2,200,65536,모찌도치 생산량 증가
+17,4,강철 가시,Enhancement_Hedgehog,3,800,131072,모찌도치 생산량 증가
+18,4,강철 가시,Enhancement_Hedgehog,4,2400,262144,모찌도치 생산량 증가
+19,4,강철 가시,Enhancement_Hedgehog,5,6400,524288,모찌도치 생산량 증가
+20,5,광산 안전모,Enhancement_Mole,1,0,1048576,두더모찌 생산량 증가
+21,5,광산 안전모,Enhancement_Mole,2,200,2097152,두더모찌 생산량 증가
+22,5,광산 안전모,Enhancement_Mole,3,800,4194304,두더모찌 생산량 증가
+23,5,광산 안전모,Enhancement_Mole,4,2400,8388608,두더모찌 생산량 증가
+24,5,광산 안전모,Enhancement_Mole,5,6400,16777216,두더모찌 생산량 증가
+25,6,테니스 공,Enhancement_Dog,1,0,33554432,모찌멍 생산량 증가
+26,6,테니스 공,Enhancement_Dog,2,200,67108864,모찌멍 생산량 증가
+27,6,테니스 공,Enhancement_Dog,3,800,134217728,모찌멍 생산량 증가
+28,6,테니스 공,Enhancement_Dog,4,2400,268435456,모찌멍 생산량 증가
+29,6,테니스 공,Enhancement_Dog,5,6400,536870912,모찌멍 생산량 증가
+30,7,고급 향수,Enhancement_Fox,1,0,1073741824,구미모찌 생산량 증가
+31,7,고급 향수,Enhancement_Fox,2,200,2147483648,구미모찌 생산량 증가
+32,7,고급 향수,Enhancement_Fox,3,800,4294967296,구미모찌 생산량 증가
+33,7,고급 향수,Enhancement_Fox,4,2400,8589934592,구미모찌 생산량 증가
+34,7,고급 향수,Enhancement_Fox,5,6400,17179869184,구미모찌 생산량 증가
+35,8,단단한 뿔,Enhancement_Elk,1,0,34359738368,모찌라니 생산량 증가
+36,8,단단한 뿔,Enhancement_Elk,2,200,68719476736,모찌라니 생산량 증가
+37,8,단단한 뿔,Enhancement_Elk,3,800,137000000000,모찌라니 생산량 증가
+38,8,단단한 뿔,Enhancement_Elk,4,2400,275000000000,모찌라니 생산량 증가
+39,8,단단한 뿔,Enhancement_Elk,5,6400,550000000000,모찌라니 생산량 증가
+40,9,날카로운 송곳니,Enhancement_Dragon,1,0,32,모찌용 생산량 증가
+41,9,날카로운 송곳니,Enhancement_Dragon,2,200,64,모찌용 생산량 증가
+42,9,날카로운 송곳니,Enhancement_Dragon,3,800,128,모찌용 생산량 증가
+43,9,날카로운 송곳니,Enhancement_Dragon,4,2400,256,모찌용 생산량 증가
+44,9,날카로운 송곳니,Enhancement_Dragon,5,6400,512,모찌용 생산량 증가
+45,10,프로틴 보충제,Enhancement_Protein,1,0,32,자동 채굴 스킬 지속시간 증가
+46,10,프로틴 보충제,Enhancement_Protein,2,200,64,자동 채굴 스킬 지속시간 증가
+47,10,프로틴 보충제,Enhancement_Protein,3,800,128,자동 채굴 스킬 지속시간 증가
+48,10,프로틴 보충제,Enhancement_Protein,4,2400,256,자동 채굴 스킬 지속시간 증가
+49,10,프로틴 보충제,Enhancement_Protein,5,6400,512,자동 채굴 스킬 지속시간 증가
+50,11,권투글러브,Enhancement_Glove,1,0,32,자동 채굴 스킬 터치량 증가
+51,11,권투글러브,Enhancement_Glove,2,200,64,자동 채굴 스킬 터치량 증가
+52,11,권투글러브,Enhancement_Glove,3,800,128,자동 채굴 스킬 터치량 증가
+53,11,권투글러브,Enhancement_Glove,4,2400,256,자동 채굴 스킬 터치량 증가
+54,11,권투글러브,Enhancement_Glove,5,6400,512,자동 채굴 스킬 터치량 증가
+55,12,행운 강화 물약,Enhancement_Portion,1,0,32,피버 광석 지속시간 증가
+56,12,행운 강화 물약,Enhancement_Portion,2,200,64,피버 광석 지속시간 증가
+57,12,행운 강화 물약,Enhancement_Portion,3,800,128,피버 광석 지속시간 증가
+58,12,행운 강화 물약,Enhancement_Portion,4,2400,256,피버 광석 지속시간 증가
+59,12,행운 강화 물약,Enhancement_Portion,5,6400,512,피버 광석 지속시간 증가
+60,13,행운의 브로치,Enhancement_Brooch,1,0,32,피버 광석 보석량 증가
+61,13,행운의 브로치,Enhancement_Brooch,2,200,64,피버 광석 보석량 증가
+62,13,행운의 브로치,Enhancement_Brooch,3,800,128,피버 광석 보석량 증가
+63,13,행운의 브로치,Enhancement_Brooch,4,2400,256,피버 광석 보석량 증가
+64,13,행운의 브로치,Enhancement_Brooch,5,6400,512,피버 광석 보석량 증가

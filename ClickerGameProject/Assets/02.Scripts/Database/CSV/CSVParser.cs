@@ -20,11 +20,11 @@ public class CSVParser
     protected string[] _Header = null;
 
 
-    public virtual void Load() { }
+    public virtual void Load(ref string str) { }
     public virtual void Parse(string[] inputData) { }
 
 
-    public void LoadFile(string fullpath)
+    public void LoadFile(string fullpath, ref string str)
     {
         //이전코드
         //TextAsset _txtFile = (TextAsset)Resources.Load(fullpath);
@@ -32,26 +32,25 @@ public class CSVParser
         string _txtFile = string.Empty;
 #if UNITY_EDITOR || UNITY_IOS
         _txtFile = File.ReadAllText(fullpath);
-
 #elif UNITY_ANDROID
         //WWW reader = new WWW (fullpath);
         //    while (!reader.isDone) {}
         //string _txtFile = reader.text;
         UnityWebRequest reader = UnityWebRequest.Get(fullpath);
         reader.SendWebRequest();
-        //while (!reader.isDone) { }
+        while (!reader.isDone) { }
         _txtFile = reader.downloadHandler.text;
 #endif
         StringReader _reader = new StringReader(_txtFile);
         int lineCount = 0;
         string inputData = _reader.ReadLine();
-
+        str += _txtFile;
 
         while (inputData != null)
         {
             //don't realize new-line("\\n") in ngui UILabel
             inputData = inputData.Replace("\\n", "\n");
-            string[] stringList = inputData.Split('^');
+            string[] stringList = inputData.Split(',');
 
             if (stringList.Length == 0)
             {
