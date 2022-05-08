@@ -10,6 +10,7 @@ public class ProductCellData : IReuseCellData
     public int id { get; set; }
     public string name { get; set; }
     public string imageName { get; set; }
+    public string description { get; set; }
 
 
     //Ãß°¡
@@ -17,10 +18,10 @@ public class ProductCellData : IReuseCellData
     public int nextLevel { get; set; }
 
 
-    public BigInteger currentAmount { get; set; }
-    public BigInteger nextAmount { get; set; }
+    public double currentAmount { get; set; }
+    public double nextAmount { get; set; }
 
-    public BigInteger cost { get; set; }
+    public double cost { get; set; }
     
     public CellState cellState { get; set; }
 }

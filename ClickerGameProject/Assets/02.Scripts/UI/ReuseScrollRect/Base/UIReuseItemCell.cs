@@ -12,11 +12,13 @@ public abstract class UIReuseItemCell : MonoBehaviour
 
     public string prefabName { get; set; }
     public int m_Index { get; private set; }
+    public int m_Id { get; private set; }
 
 
     public virtual void UpdateData(int idx, IReuseCellData CellData, int ClickIndexID = -1)
     {
         m_Index = idx;
+        m_Id = CellData.id;
         gameObject.name = prefabName + idx.ToString();
     }
 
@@ -47,8 +49,8 @@ public abstract class UIReuseItemCell : MonoBehaviour
         set { m_OnClick_Custom = value; }
     }
 
-    //현재 인덱스 값을 반환하는 델리게이트
-    public Action<int> onClick_Index;
+    //현재 인덱스와 id 값을 반환하는 델리게이트
+    public Action<int,int> onClick_Index;
 
 
     protected virtual void Awake()

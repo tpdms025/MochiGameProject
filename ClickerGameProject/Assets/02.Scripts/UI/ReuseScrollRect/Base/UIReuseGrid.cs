@@ -39,10 +39,10 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
             Debug.LogError("m_ReuseScrollView == null");
             return;
         }
-        InitData();
+        //InitData();
     }
 
-    private void InitData()
+    public void InitData()
     {
         if (m_ReuseBank == null)
         {
@@ -153,9 +153,25 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
     }
 
     /// <summary>
+    /// 셀 데이터를 ID 순서로 정렬한다.
+    /// </summary>
+    public void SortCellData_IdOrder(bool isReverse = false)
+    {
+        // 람다식으로 정렬 구현
+        var TempContent = m_ReuseBank.GetListData();
+        if (!isReverse)
+            TempContent.Sort((x, y) => x.id.CompareTo(y.id));
+        else
+            TempContent.Sort((x, y) => -x.id.CompareTo(y.id));
+
+
+        m_ScrollRect.ClearCells();
+        RefillAllCell();
+    }
+
+    /// <summary>
     /// 셀 데이터를 인덱스 순서로 정렬한다.
     /// </summary>
-    /// <param name="isReverse"></param>
     public void SortCellData_IndexOrder(bool isReverse = false)
     {
         // 람다식으로 정렬 구현
@@ -323,7 +339,8 @@ public class UIReuseGrid : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMult
     }
 
     #endregion
-    public event Action<int> onClickEvent;
+    //인덱스와 id값을 반환하는 터치이벤트 
+    public event Action<int,int> onClickEvent;
     private void OnButtonScrollIndexCallbackClick(UIReuseItemCell ScrollIndexCallback, int ClickIndexID)
     {
         //Debug.LogWarningFormat("InitOnStartMulti => Click index: {0}", ClickIndexID);

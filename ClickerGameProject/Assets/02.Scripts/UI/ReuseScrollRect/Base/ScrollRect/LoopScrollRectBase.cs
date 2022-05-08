@@ -521,7 +521,7 @@ namespace UnityEngine.UI
 
         public void RefreshCells()
         {
-            if (Application.isPlaying && this.isActiveAndEnabled)
+            if (Application.isPlaying /*&& this.isActiveAndEnabled*/)
             {
                 itemTypeEnd = itemTypeStart;
                 // recycle items if we can

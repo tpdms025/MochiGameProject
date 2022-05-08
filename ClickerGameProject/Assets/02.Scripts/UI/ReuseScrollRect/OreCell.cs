@@ -9,7 +9,7 @@ using UnityEngine.U2D;
 
 public class OreCell : UIReuseItemCell
 {
-    private BigInteger buyCost;
+    private double buyCost;
 
     [SerializeField] private CellState state;
 
@@ -20,6 +20,7 @@ public class OreCell : UIReuseItemCell
     [SerializeField] private Image preview_border;
     [SerializeField] private Image preview_icon;
     [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private Image dotLine;
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private TextMeshProUGUI nextLevelText;
     [SerializeField] private TextMeshProUGUI jewelPerClickText;
@@ -32,8 +33,10 @@ public class OreCell : UIReuseItemCell
     [SerializeField] private Color32 maxTextColor;
     [SerializeField] private Sprite normalBGSprite;
     [SerializeField] private Sprite normalPreviewSprite;
+    [SerializeField] private Sprite normalDotLineSprite;
     [SerializeField] private Sprite selectedBGSprite;
     [SerializeField] private Sprite selectedPreviewSprite;
+    [SerializeField] private Sprite selectedDotSprite;
     [SerializeField] private Transform arrowObj1;
     [SerializeField] private Transform arrowObj2;
     private Transform silhouetteSprite;
@@ -70,7 +73,6 @@ public class OreCell : UIReuseItemCell
 
 
         buyCost = item.cost;
-
         //UI 갱신
         preview_icon.sprite = _iconAtlas.GetSprite("Icon_"+item.imageName);
         ChangeUI(item);
@@ -81,17 +83,19 @@ public class OreCell : UIReuseItemCell
         {
             bgImage.sprite = selectedBGSprite;
             preview_border.sprite = selectedPreviewSprite;
+            dotLine.sprite = selectedDotSprite;
         }
         else
         {
             bgImage.sprite = normalBGSprite;
             preview_border.sprite = normalPreviewSprite;
+            dotLine.sprite = normalDotLineSprite;
         }
 
         state = item.cellState;
         ShowSlotUIForState();
 
-        ChangeUpgradeBtnState(MoneyManager.Instance.Jewel);
+        ChangeUpgradeBtnState(MoneyManager.Inst.Jewel.Value);
     }
 
 
@@ -120,17 +124,19 @@ public class OreCell : UIReuseItemCell
 
             bgImage.sprite = selectedBGSprite;
             preview_border.sprite = selectedPreviewSprite;
+            dotLine.sprite = selectedDotSprite;
         }
         else
         {
             bgImage.sprite = normalBGSprite;
             preview_border.sprite = normalPreviewSprite;
+            dotLine.sprite = normalDotLineSprite;
         }
 
         state = item.cellState;
         ShowSlotUIForState();
 
-        ChangeUpgradeBtnState(MoneyManager.Instance.Jewel);
+        ChangeUpgradeBtnState(MoneyManager.Inst.Jewel.Value);
     }
 
 
@@ -143,7 +149,7 @@ public class OreCell : UIReuseItemCell
     {
         if (onClick_Index != null)
         {
-            onClick_Index.Invoke(m_Index);
+            onClick_Index.Invoke(m_Index,m_Id);
         }
     }
 
@@ -154,7 +160,7 @@ public class OreCell : UIReuseItemCell
     /// 소유한 재화에 맞게 업그레이드 버튼의 상태를 변경한다.
     /// </summary>
     /// <param name="jewel"></param>
-    private void ChangeUpgradeBtnState(BigInteger jewel)
+    private void ChangeUpgradeBtnState(double jewel)
     {
         bool result;
         if (state == CellState.Lock)
@@ -258,14 +264,14 @@ public class OreCell : UIReuseItemCell
     {
         onClick_Custom.AddListener(() => OnButtonIndexCellCallbackClick());
         //m_Button.onClick.AddListener(PurchaseUpgrade);
-        MoneyManager.Instance.onJewelChanged += ChangeUpgradeBtnState;
+        MoneyManager.Inst.Jewel.onValueChanged += ChangeUpgradeBtnState;
     }
 
     private void UnsubscribeFromUpgradeButtonEvents()
     {
         onClick_Custom.RemoveListener(() => OnButtonIndexCellCallbackClick());
         //m_Button.onClick.RemoveListener(PurchaseUpgrade);
-        MoneyManager.Instance.onJewelChanged -= ChangeUpgradeBtnState;
+        MoneyManager.Inst.Jewel.onValueChanged -= ChangeUpgradeBtnState;
     }
 
 }
