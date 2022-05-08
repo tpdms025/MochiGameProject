@@ -14,18 +14,19 @@ public abstract class SkillButton : MonoBehaviour
     protected float maxCooldown;
 
     //남은 쿨다운 시간 (초)
-    protected float cooldownRemaining;
+    public float cooldownRemaining;
 
     //버프 시간 (초)
     protected float buffTime;
 
     //남은 버프 시간 (초)
-    protected float buffTimeRemaining;
+    public float buffTimeRemaining;
 
     //버프가 발동되었는지 확인하는 bool값 변수
     [SerializeField] protected bool isActivate;
 
-
+    //버프가 이전에 발동되었는지 확인하는 bool값 변수
+    protected bool prevActivate;
 
 
     //버프가 발동할 때의 이벤트 델리게이트 (float: 경과 시간)
@@ -96,27 +97,30 @@ public abstract class SkillButton : MonoBehaviour
     }
 
 
-   
+
 
     /// <summary>
     /// 이전에 버프 및 쿨타임이 발동중인지 판단하면서,
     /// 오프라인 시간을 비교해 남은시간을 계산한다.
     /// </summary>
-    protected float GetRemainingTime(float prevRemainingTime, float maxTime)
+    protected float GetRemainingTime(float prevRemainingTime, float maxTime, out bool isPrevActivate)
     {
         //남은시간이 최대시간과 같다면 이전에 발동이 안된 것으로 간주
-        if (prevRemainingTime == maxTime)
+        if (prevRemainingTime == maxTime || prevRemainingTime == 0)
         {
+            isPrevActivate = false;
             return maxTime;
         }
 
-        double intervalTime = TimerManager.Instance.offlineTimeSpan.TotalSeconds;
-        if (0 <= intervalTime && intervalTime <= prevRemainingTime)
+        var intervalTime = TimerManager.Inst.offlineTimeSpan.TotalSeconds;
+        if (0 <= intervalTime && intervalTime < prevRemainingTime)
         {
+            isPrevActivate = true;
             return prevRemainingTime - (float)intervalTime;
         }
         else
         {
+            isPrevActivate = false;
             return maxTime;
         }
     }

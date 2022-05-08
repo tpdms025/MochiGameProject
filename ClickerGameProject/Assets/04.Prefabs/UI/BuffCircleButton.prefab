@@ -514,7 +514,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffTime: 0
   timeRemaining: 0
-  isActivate: 0
   button: {fileID: 4260796273829927963}
   fill: {fileID: 968719125432392820}
   timeText: {fileID: 354900407364657180}
@@ -737,8 +736,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 99:99
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 760dc62a6fc556649ac01e5a8e31ba15, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d03f8e83c16bf5a489d304fea60bd28a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 28397ece2811e2d4896a46026de81161, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

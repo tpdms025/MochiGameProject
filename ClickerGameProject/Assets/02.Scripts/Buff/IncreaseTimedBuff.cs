@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class IncreaseTimedBuff : TimedBuff
 {
-    private Ability ability;
+    private ValueModifiers valueModifiers;
 
-    public IncreaseTimedBuff(int id, float _duration, Ability _ability) : base(id,_duration)
+    public IncreaseTimedBuff(int id, float _duration, ValueModifiers valueModifiers) : base(id,_duration)
     {
-        ability = _ability;
+        this.valueModifiers = valueModifiers;
     }
 
     /// <summary>
@@ -16,7 +16,7 @@ public class IncreaseTimedBuff : TimedBuff
     /// </summary>
     protected override void ApplyEffect()
     {
-        ability.m_increaseRate = 3; 
+        valueModifiers.afterMult *= 3d;
     }
 
     protected override void UpdateEffect(float delta)
@@ -28,7 +28,7 @@ public class IncreaseTimedBuff : TimedBuff
     /// </summary>
     public override void End()
     {
-        ability.m_increaseRate = 1;
+        valueModifiers.afterMult /= 3d;
     }
 }
 

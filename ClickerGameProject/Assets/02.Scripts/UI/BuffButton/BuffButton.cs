@@ -10,11 +10,13 @@ public abstract class BuffButton : MonoBehaviour
     [SerializeField] protected float buffTime;
 
     //남은 버프 시간 (초)
-    [SerializeField] protected float timeRemaining;
+    public float timeRemaining;
 
     //버프가 발동되었는지 확인하는 bool값 변수
-    [SerializeField] protected bool isActivate;
+    protected bool isActivate;
 
+    //버프가 이전에 발동되었는지 확인하는 bool값 변수
+    protected bool prevActivate;
 
 
 
@@ -47,12 +49,12 @@ public abstract class BuffButton : MonoBehaviour
     /// <summary>
     /// 버프를 활성화한다.
     /// </summary>
-    protected abstract void Activate();
+    protected abstract IEnumerator Activate();
 
     /// <summary>
     /// 버프를 비활성화한다.
     /// </summary>
-    protected abstract void Deactivate();
+    protected abstract IEnumerator Deactivate();
 
     /// <summary>
     /// 버프 상태를 변경한다.
@@ -64,21 +66,11 @@ public abstract class BuffButton : MonoBehaviour
 
         if (isActivate)
         {
-            //버프효과를 부여한다.
-            if (onStartedBuff != null)
-            {
-                onStartedBuff.Invoke(timeRemaining);
-            }
-            Activate();
+            StartCoroutine(Activate());
         }
         else
         {
-            //버프 효과를 끝낸다.
-            if (onFinishedBuff != null)
-            {
-                onFinishedBuff.Invoke();
-            }
-            Deactivate();
+            StartCoroutine(Deactivate());
         }
     }
 
@@ -88,21 +80,24 @@ public abstract class BuffButton : MonoBehaviour
     /// 오프라인 시간을 비교해 남은시간을 계산한다.
     /// </summary>
     /// <returns></returns>
-    protected float GetRemainingTime(float prevRemainingTime, float maxTime)
+    protected float GetRemainingTime(float prevRemainingTime, float maxTime, out bool isPrevActivate)
     {
         //남은시간이 최대시간과 같다면 이전에 발동이 안된 것으로 간주
-        if (prevRemainingTime == maxTime)
+        if (prevRemainingTime == maxTime || prevRemainingTime == 0)
         {
+            isPrevActivate = false;
             return maxTime;
         }
 
-        double intervalTime = TimerManager.Instance.offlineTimeSpan.TotalSeconds;
-        if (0 <= intervalTime && intervalTime <= prevRemainingTime)
+        var intervalTime = TimerManager.Inst.offlineTimeSpan.TotalSeconds;
+        if (0 <= intervalTime && intervalTime < prevRemainingTime)
         {
+            isPrevActivate = true;
             return prevRemainingTime - (float)intervalTime;
         }
         else
         {
+            isPrevActivate = false;
             return maxTime;
         }
     }

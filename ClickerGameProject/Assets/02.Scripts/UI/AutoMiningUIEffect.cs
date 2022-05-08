@@ -8,6 +8,7 @@ public class AutoMiningUIEffect : MonoBehaviour
     private RectTransform bg;
     private RectTransform mochikingImg;
     private RectTransform text;
+    private GameObject modal;
 
     public Ease ease;
 
@@ -16,6 +17,8 @@ public class AutoMiningUIEffect : MonoBehaviour
         bg = transform.Find("Background").GetComponent<RectTransform>();
         mochikingImg = transform.Find("MochiKingImg").GetComponent<RectTransform>();
         text = transform.Find("Texts").GetComponent<RectTransform>();
+        modal = transform.Find("Modal").gameObject;
+        modal.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -42,6 +45,7 @@ public class AutoMiningUIEffect : MonoBehaviour
     /// </summary>
     private IEnumerator Cor_PlayAnimation()
     {
+        modal.gameObject.SetActive(true);
         bg.DOAnchorPosX(0f,0.3f).SetEase(ease);
         mochikingImg.DOAnchorPosX(-150.0f, 0.2f).SetDelay(0.2f).SetEase(ease);
         text.DOAnchorPosX(225.0f, 0.2f).SetDelay(0.4f).SetEase(ease);
@@ -51,5 +55,8 @@ public class AutoMiningUIEffect : MonoBehaviour
         bg.DOAnchorPosX(1080f, 0.2f).SetEase(ease);
         mochikingImg.DOAnchorPosX(-150f + 1080f, 0.2f).SetEase(ease);
         text.DOAnchorPosX(225f + 1080f, 0.2f).SetEase(ease);
+
+        yield return new WaitForSeconds(0.2f);
+        modal.gameObject.SetActive(false);
     }
 }

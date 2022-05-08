@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class FeverBuff : TimedBuff
 {
-    private Ability ability;
+    private ValueModifiers valueModifiers;
+    private double bufferMult; 
 
-    public FeverBuff(int id, float _duration, Ability _ability) : base(id, _duration)
+    public FeverBuff(int id, float _duration, ValueModifiers valueModifiers) : base(id, _duration)
     {
-        ability = _ability;
+        this.valueModifiers = valueModifiers;
     }
 
     /// <summary>
@@ -16,8 +17,8 @@ public class FeverBuff : TimedBuff
     /// </summary>
     protected override void ApplyEffect()
     {
-        ability.m_increaseRate = 3;
-        Debug.Log("피버 3배 증가");
+        bufferMult = MoneyManager.Inst.feverAmount.Value;
+        valueModifiers.afterMult *= bufferMult;
     }
 
     protected override void UpdateEffect(float delta)
@@ -29,7 +30,7 @@ public class FeverBuff : TimedBuff
     /// </summary>
     public override void End()
     {
-        ability.m_increaseRate = 1;
+        valueModifiers.afterMult /= bufferMult;
         if (TouchController.onTouchReset != null)
         {
             TouchController.onTouchReset.Invoke();

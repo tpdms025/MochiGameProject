@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class AutomaticMiningBuff : TimedBuff
 {
-    private  Ability ability;
+    private ValueModifiers valueModifiers;
     private float time = 0.0f;
-    public AutomaticMiningBuff(int id, float _duration, Ability _ability) : base(id, _duration)
+    private double bufferCnt;
+    public AutomaticMiningBuff(int id, float _duration, ValueModifiers valueModifiers) : base(id, _duration)
     {
-        ability = _ability;
+        this.valueModifiers = valueModifiers;
     }
 
     /// <summary>
@@ -16,17 +17,21 @@ public class AutomaticMiningBuff : TimedBuff
     /// </summary>
     protected override void ApplyEffect()
     {
-        DBManager.Inst.PlayerData.isAutoMining = true;
+        DBManager.Inst.inventory.isAutoMining = true;
+        bufferCnt = MoneyManager.Inst.autoMiningTouchCnt.Value;
     }
 
     protected override void UpdateEffect(float delta)
     {
-        time += delta;
-        //1초당 3회씩 보석 지급
-        if(time > 1.0f)
+        if (!DBManager.Inst.isGameStop)
         {
-            MoneyManager.Instance.AddJewel(ability.Value*3);
-            time=0.0f;
+            time += delta;
+            //1초당 n회씩 터치당 획득량만큼의 보석 지급
+            if (time > 1.0f)
+            {
+                MoneyManager.Inst.SumJewel(valueModifiers.Value * bufferCnt);
+                time = 0.0f;
+            }
         }
     }
 
@@ -35,6 +40,6 @@ public class AutomaticMiningBuff : TimedBuff
     /// </summary>
     public override void End()
     {
-        DBManager.Inst.PlayerData.isAutoMining = false;
+        DBManager.Inst.inventory.isAutoMining = false;
     }
 }

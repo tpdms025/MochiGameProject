@@ -14,7 +14,7 @@ public class BuffableEntity : MonoBehaviour
 
     private IEnumerator Cor_LoopCheckBuffs()
     {
-        while (true)
+        while (!DBManager.Inst.isGameStop)
         {
             if (_buffs.Count != 0)
             {

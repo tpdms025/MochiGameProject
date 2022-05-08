@@ -7,6 +7,17 @@ using System;
 
 public class FeverBar : BuffButton
 {
+
+
+    // 강화수치를 곱한 최종 값
+    // 버프 지속시간
+    private float BuffTime
+    {
+        get { return buffTime * MoneyManager.Inst.feverDuration.rateCalc.GetResultRate(); }
+    }
+
+
+
     #region Fields
 
     //피버 효과의 프레임 스프라이트 
@@ -40,11 +51,13 @@ public class FeverBar : BuffButton
     private void OnEnable()
     {
         button.onClick.AddListener(TriggerEffect);
+        TouchController.onUserTouched += DeactivateStateUI;
     }
 
     private void OnDisable()
     {
         button.onClick.RemoveListener(TriggerEffect);
+        TouchController.onUserTouched -= DeactivateStateUI;
     }
     #endregion
 
@@ -52,15 +65,14 @@ public class FeverBar : BuffButton
     /// <summary>
     /// 데이터를 로드하여 세팅한다.
     /// </summary>
-    /// <param name="_duration"></param>
-    /// <param name="_timeRemaining"></param>
     public override void LoadData(float _timeRemaining, float _buffTime)
     {
-        timeRemaining = GetRemainingTime(_timeRemaining, _buffTime);
+        bool _prevActivate;
         buffTime = _buffTime;
-        bool prevActivate = (timeRemaining == buffTime) ? false : true;
+        timeRemaining = GetRemainingTime(_timeRemaining, BuffTime, out _prevActivate);
+        prevActivate = _prevActivate;
 
-        ChangeBuffState(prevActivate);
+        base.ChangeBuffState(_prevActivate);
     }
 
     #region Private Methods
@@ -76,9 +88,9 @@ public class FeverBar : BuffButton
     protected override void ChangeBuffState(bool _isActivate)
     {
         base.ChangeBuffState(_isActivate);
-        if (Ore.onOreChanged != null)
+        if (OreWorld.onOreChanged != null)
         {
-            Ore.onOreChanged(_isActivate);
+            OreWorld.onOreChanged(_isActivate);
         }
     }
 
@@ -87,45 +99,69 @@ public class FeverBar : BuffButton
     /// <summary>
     /// 버프를 활성화한다.
     /// </summary>
-    protected override void Activate()
+    protected override IEnumerator Activate()
     {
-        TouchController.onUserTouched -= DeactivateStateUI;
+        //발동전의 버프시간을 저장해둔다.
+        //(발동중에 강화를 할때 실시간으로 적용되는것을 막기위한 변수)
+        float buffTime_buffer = BuffTime;
 
-        StartCoroutine(Cor_ActivateStateUI());
-    }
+        if (!prevActivate)
+        {
+            timeRemaining = BuffTime;
+        }
+        else
+        {
+            prevActivate = false;
+        }
 
-    /// <summary>
-    /// 버프를 비활성화한다.
-    /// </summary>
-    protected override void Deactivate()
-    {
-        DeactivateStateUI(0,1);
-        TouchController.onUserTouched += DeactivateStateUI;
-    }
+        //버프효과를 부여한다.
+        if (onStartedBuff != null)
+        {
+            onStartedBuff.Invoke(timeRemaining);
+        }
 
-
-
-
-    /// <summary>
-    /// 버프를 발동한 상태의 UI를 갱신한다.
-    /// </summary>
-    private IEnumerator Cor_ActivateStateUI()
-    {
         frameImg.sprite = frameActivateSprite;
         iconImg.sprite = iconActivableIconSprite;
         touchText.gameObject.SetActive(false);
         button.enabled = false;
 
+        yield return StartCoroutine(BuffTimer(buffTime_buffer));
+
+        //버프 효과를 끝낸다.
+        if (onFinishedBuff != null)
+        {
+            onFinishedBuff.Invoke();
+        }
+
+        //버프를 끝내고 상태 변경한다.
+        ChangeBuffState(false);
+
+    }
+
+    /// <summary>
+    /// 버프를 비활성화한다.
+    /// </summary>
+    protected override IEnumerator Deactivate()
+    {
+        DeactivateStateUI(DBManager.Inst.inventory.touchCount, TouchController.maxTouchCount);
+            yield return null;
+    }
+
+
+
+
+    /// <summary>
+    /// 버프 타이머 UI를 갱신한다.
+    /// </summary>
+    private IEnumerator BuffTimer(float buffTime_buffer)
+    {
         while (timeRemaining >= 0)
         {
-            UpdateFiilAmount(timeRemaining, buffTime);
+            UpdateFiilAmount(timeRemaining, buffTime_buffer);
             timeRemaining -= Time.deltaTime;
             yield return null;
         }
-        timeRemaining = buffTime;
-
-        //버프를 끝낸다.
-        ChangeBuffState(false);
+        //timeRemaining = BuffTime;
     }
 
     /// <summary>

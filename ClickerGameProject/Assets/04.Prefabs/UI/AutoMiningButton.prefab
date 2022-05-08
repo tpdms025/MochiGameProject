@@ -254,8 +254,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 99:99
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 760dc62a6fc556649ac01e5a8e31ba15, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d03f8e83c16bf5a489d304fea60bd28a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 28397ece2811e2d4896a46026de81161, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -679,7 +679,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8309105631328676345}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -791,6 +791,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5e797831b7344141a96cbe5b8f09911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cooldownRemaining: 0
+  buffTimeRemaining: 0
   isActivate: 0
   button: {fileID: 8574924352918035273}
   fill: {fileID: 4706462889025739558}

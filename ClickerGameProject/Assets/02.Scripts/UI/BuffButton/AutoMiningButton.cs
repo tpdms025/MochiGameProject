@@ -10,6 +10,14 @@ public class AutoMiningButton : SkillButton
     //노란색 아웃라인의 회전 속도
     private const float rotateSpeed = 30.0f;
 
+ 
+
+    // 강화수치를 곱한 최종 값
+    // 버프 지속시간
+    private float BuffTime
+    {
+        get { return buffTime * MoneyManager.Inst.autoMiningDuration.rateCalc.GetResultRate(); }
+    }
 
     #region Fields
 
@@ -50,7 +58,6 @@ public class AutoMiningButton : SkillButton
 
 
 
-
     #region Methods
 
     /// <summary>
@@ -60,19 +67,46 @@ public class AutoMiningButton : SkillButton
     {
         buffTime = _buffTime;
         maxCooldown = _maxCooldown;
-        buffTimeRemaining = GetRemainingTime(_timeRemaining, _buffTime);
-        cooldownRemaining = GetRemainingTime(_cooldownRemaining, _maxCooldown);
-        bool prevBuffActivate = (buffTimeRemaining == buffTime) ? false : true;
-        bool prevCooldownActivate = (_cooldownRemaining == _maxCooldown) ? false : true;
 
+        //bool _prevBuffActivate;
+        //bool _prevCooldownActivate;
+        //buffTimeRemaining = GetRemainingTime(_timeRemaining, BuffTime, out _prevBuffActivate);
+        //cooldownRemaining = GetRemainingTime(_cooldownRemaining, _maxCooldown, out _prevCooldownActivate);
+        //prevActivate = _prevBuffActivate;
+
+        bool _prevActivate;
         //버프의 남은시간과 쿨타임으로 현재 상태를 설정한다.
         SkillState state;
-        if (prevBuffActivate)
-            state = SkillState.ApplyBuff;
-        else if (prevCooldownActivate)
-            state = SkillState.Cooldown;
+
+        float totalTime = GetRemainingTime(_timeRemaining + _cooldownRemaining, BuffTime + _maxCooldown, out _prevActivate);
+        prevActivate = _prevActivate;
+        if(_prevActivate)
+        {
+            if(totalTime > _cooldownRemaining)
+            {
+                buffTimeRemaining = totalTime - _cooldownRemaining;
+                cooldownRemaining = _maxCooldown;
+                state = SkillState.ApplyBuff;
+            }
+            else
+            {
+                buffTimeRemaining = 0f;
+                cooldownRemaining = totalTime - _timeRemaining;
+                state = SkillState.Cooldown;
+            }
+        }
         else
+        {
             state = SkillState.None;
+        }
+
+
+        //if (_prevCooldownActivate)
+        //    state = SkillState.Cooldown;
+        //else if (_prevBuffActivate)
+        //    state = SkillState.ApplyBuff;
+        //else
+        //    state = SkillState.None;
 
         //상태 변경
         ChangeState(state);
@@ -102,6 +136,8 @@ public class AutoMiningButton : SkillButton
         timeText.gameObject.SetActive(false);
         circularImg.gameObject.SetActive(false);
         fill.fillAmount = 0;
+
+        //buffTimeRemaining = BuffTime;
     }
 
     /// <summary>
@@ -109,6 +145,15 @@ public class AutoMiningButton : SkillButton
     /// </summary>
     protected override IEnumerator BuffUsed()
     {
+        if(!prevActivate)
+        {
+            buffTimeRemaining = BuffTime;
+        }
+        else
+        {
+            prevActivate = false;
+        }
+
         //버프효과를 부여한다.
         if (onStartedBuff != null)
         {
@@ -163,7 +208,7 @@ public class AutoMiningButton : SkillButton
             buffTimeRemaining -= Time.deltaTime;
             yield return null;
         }
-        buffTimeRemaining = buffTime;
+        //buffTimeRemaining = BuffTime;
     }
 
 
@@ -171,7 +216,7 @@ public class AutoMiningButton : SkillButton
     {
         while (cooldownRemaining > 0)
         {
-            UpdateFiilAmount(cooldownRemaining);
+            UpdateFiilAmount(cooldownRemaining, maxCooldown);
             UpdateTimeText(cooldownRemaining);
 
             cooldownRemaining -= Time.deltaTime;
@@ -183,9 +228,9 @@ public class AutoMiningButton : SkillButton
     #endregion
 
 
-    protected void UpdateFiilAmount(float time)
+    protected void UpdateFiilAmount(float time, float maxTime)
     {
-        fill.fillAmount = time / maxCooldown;
+        fill.fillAmount = time / maxTime;
     }
 
     protected void UpdateTimeText(float time)

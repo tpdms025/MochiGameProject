@@ -53,15 +53,14 @@ public class BuffCircularBar : BuffButton
     /// <summary>
     /// 데이터를 로드하여 세팅한다.
     /// </summary>
-    /// <param name="_timeRemaining"></param>
-    /// <param name="_buffTime"></param>
     public override void LoadData(float _timeRemaining, float _buffTime)
     {
-        timeRemaining = GetRemainingTime(_timeRemaining, _buffTime);
+        bool _prevActivate;
+        timeRemaining = GetRemainingTime(_timeRemaining, _buffTime, out _prevActivate);
         buffTime = _buffTime;
-        bool prevActivate = (timeRemaining == buffTime) ? false : true;
+        prevActivate = _prevActivate;
 
-        ChangeBuffState(prevActivate);
+        ChangeBuffState(_prevActivate);
     }
 
     #endregion
@@ -81,33 +80,59 @@ public class BuffCircularBar : BuffButton
     /// <summary>
     /// 버프를 활성화한다.
     /// </summary>
-    protected override void Activate()
+    protected override IEnumerator Activate()
     {
-        StartCoroutine(Cor_ActivateStateUI());
-    }
+        if (!prevActivate)
+        {
+            timeRemaining = buffTime;
+        }
+        else
+        {
+            prevActivate = false;
+        }
 
-    /// <summary>
-    /// 버프를 비활성화한다.
-    /// </summary>
-    protected override void Deactivate()
-    {
-        DeactivateStateUI();
-    }
+        //버프효과를 부여한다.
+        if (onStartedBuff != null)
+        {
+            onStartedBuff.Invoke(timeRemaining);
+        }
 
-
-
-
-
-    /// <summary>
-    /// 버프 활성화 상태의 UI를 갱신한다.
-    /// </summary>
-    private IEnumerator Cor_ActivateStateUI()
-    {
         circularImg.gameObject.SetActive(true);
         fill.transform.gameObject.SetActive(true);
         timeText.transform.gameObject.SetActive(true);
         button.interactable = false;
 
+
+        yield return StartCoroutine(BuffTimer());
+
+        //버프 효과를 끝낸다.
+        if (onFinishedBuff != null)
+        {
+            onFinishedBuff.Invoke();
+        }
+
+        //버프를 끝낸다.
+        ChangeBuffState(false);
+    }
+
+    /// <summary>
+    /// 버프를 비활성화한다.
+    /// </summary>
+    protected override IEnumerator Deactivate()
+    {
+        DeactivateStateUI();
+        yield return null;
+    }
+
+
+
+
+
+    /// <summary>
+    /// 버프 타이머 UI를 갱신한다.
+    /// </summary>
+    private IEnumerator BuffTimer()
+    {
         //버프시간동안 UI를 갱신한다.
         while (timeRemaining >= 0)
         {
@@ -121,11 +146,7 @@ public class BuffCircularBar : BuffButton
             timeRemaining -= Time.deltaTime;
             yield return null;
         }
-
-        timeRemaining = buffTime;
-
-        //버프를 끝낸다.
-        ChangeBuffState(false);
+        //timeRemaining = buffTime;
     }
 
     /// <summary>
@@ -145,8 +166,6 @@ public class BuffCircularBar : BuffButton
     /// <summary>
     /// 시간 텍스트를 갱신한다.
     /// </summary>
-    /// <param name="time"></param>
-    /// <param name="maxTime"></param>
     private void UpdateTimeText(float time)
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(time + 1);    //올림을 위해 +1
