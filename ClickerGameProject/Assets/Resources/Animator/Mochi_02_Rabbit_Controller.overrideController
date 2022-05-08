@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mochi_Rabbit_Controller
+  m_Name: Mochi_02_Rabbit_Controller
   m_Controller: {fileID: 9100000, guid: 52f944ec29bc2794c80aa96e4c9d38e2, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 2c7756aed60fbc14886353a10a2733aa, type: 2}

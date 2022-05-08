@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WorkmanSpawner : MonoBehaviour
 {
+    [Header("Position")]
+
     //스폰 위치들
     [SerializeField] private Vector3[] spawnPoints;
 
@@ -14,8 +16,24 @@ public class WorkmanSpawner : MonoBehaviour
     [SerializeField] private Vector3[] targetPoints;
 
 
+
+    [Space(10)]
+    [Header("Time")]
+
+    //idle->attack 까지의 패턴 시간
+    //(모든 일꾼들의 패턴을 동일하게 하고자 함)
+    [SerializeField] private readonly float patternTime = 1.216667f;
+
+    //현재 일꾼의 패턴 시간
+    [SerializeField] private float curPatternTime = 0f;
+
+
+    [Space(10)]
+
     //복사할 프리팹
     private GameObject clonePrefab;
+
+    private LoadAnimator loadAnimator;
 
     //일꾼이 스폰할 때 호출되는 이벤트 델리게이트 함수
     public static System.Action<int> onSpawned;
@@ -37,7 +55,7 @@ public class WorkmanSpawner : MonoBehaviour
         maxPoints = new Vector3[transform.Find("ProjectileMaxPoints").childCount];
         targetPoints = new Vector3[transform.Find("ProjectileTargetPoints").childCount];
 
-        for (int i=0; i< spawnPoints.Length;i++)
+        for (int i = 0; i < spawnPoints.Length; i++)
         {
             spawnPoints[i] = transform.Find("SpawnPoints").GetChild(i).transform.position;
         }
@@ -51,8 +69,31 @@ public class WorkmanSpawner : MonoBehaviour
         }
 
         clonePrefab = Resources.Load("Prefabs/Workman") as GameObject;
+        loadAnimator = GetComponent<LoadAnimator>();
+
 
         onSpawned += SpawnWorkman;
+    }
+
+    private void Start()
+    {
+        //일꾼을 하나라도 소유하고 있다면
+        if (DBManager.Inst.inventory.workmanCount > 0)
+        {
+            //소유한 일꾼들만 스폰
+            if (onSpawned != null)
+            {
+                for (int i = 0; i < DBManager.Inst.inventory.workmanLevels_owned.Length; i++)
+                {
+                    //레벨이 0보다 크면 구매한 것으로 간주
+                    if (DBManager.Inst.inventory.workmanLevels_owned[i] > 0)
+                    {
+                        onSpawned.Invoke(i);
+                    }
+                }
+            }
+        }
+        StartCoroutine(Cor_CheckPatternTime());
     }
 
 
@@ -68,26 +109,20 @@ public class WorkmanSpawner : MonoBehaviour
     public void SpawnWorkman(int idSelected)
     {
         Vector2 pointToSpawn = spawnPoints[idSelected];
-        Workman workmanObj= CreateWorkman(pointToSpawn).GetComponent<Workman>();
+        Workman workmanObj = CreateWorkman(pointToSpawn).GetComponentInChildren<Workman>();
 
-        //짝수번호라면 좌우 반전
-        if(idSelected >> 1 == 0)
+        //오른쪽에 있으면 좌우반전
+        if (pointToSpawn.x < 0)
         {
             workmanObj.GetComponent<SpriteRenderer>().flipX = true;
         }
-        //Vector3 targetPoint = localToWorldPoint(spawnPoints[idSelected] + new Vector3(3.0f, 0f, 0f));
-        //Vector3 maxPoint = localToWorldPoint(spawnPoints[idSelected] + new Vector3(1.5f, 2.0f, 0f));
-        Vector3 targetPoint = spawnPoints[idSelected] + new Vector3(3.0f, 0f, 0f);
-        Vector3 maxPoint = spawnPoints[idSelected] + new Vector3(1.5f, 2.0f, 0f);
 
-        workmanObj.Init(maxPoints[idSelected], targetPoints[idSelected]);
-        StartCoroutine(workmanObj.FSM());
+        workmanObj.SetAnimator(loadAnimator.GetAnimatorController(idSelected));
+        workmanObj.Init(maxPoints[idSelected], targetPoints[idSelected],loadAnimator.GetSprite(idSelected));
+        StartCoroutine(workmanObj.FSM(curPatternTime));
     }
 
-    private Vector3 localToWorldPoint(Vector3 localPoint)
-    {
-        return transform.position + localPoint;
-    }
+
 
 
     /// <summary>
@@ -101,5 +136,26 @@ public class WorkmanSpawner : MonoBehaviour
         obj.SetActive(true);
 
         return obj;
+    }
+
+
+    /// <summary>
+    /// 일꾼 상태 패턴의 시간을 확인한다.
+    /// </summary>
+    private IEnumerator Cor_CheckPatternTime()
+    {
+        //일꾼 구매가 한번이상이 있을때까지 대기
+        yield return new WaitUntil(() => DBManager.Inst.inventory.workmanCount > 0);
+
+        yield return null;
+        while (!DBManager.Inst.isGameStop)
+        {
+            curPatternTime += Time.deltaTime;
+            if (curPatternTime >= patternTime)
+            {
+                curPatternTime = 0f;
+            }
+            yield return null;
+        }
     }
 }

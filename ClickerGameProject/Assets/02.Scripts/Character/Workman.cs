@@ -4,22 +4,25 @@ using UnityEngine;
 
 public class Workman : MonoBehaviour
 {
-    private int hashIdle = Animator.StringToHash("isIdle");
-    private int hashAttack = Animator.StringToHash("isAttack");
+    private readonly int hashIdle = Animator.StringToHash("isIdle");
+    private readonly int hashAttack = Animator.StringToHash("isAttack");
     private enum WorkmanState { Idle,Attack};
     private WorkmanState _state;
 
     //패턴(공격->기다림)의 시간
-    private float patternTime = 4.0f;
+    private float attackTime;
 
     //투사체의 발사 시간
-    private float projectileTime = 0.5f;
+    private readonly float projectileTime = 0.5f;
 
     //투사체의 도착 지점
     private Vector3 targetPoint;
 
     //투사체의 최고 지점
     private Vector3 maxPoint;
+
+    //투사체 스프라이트
+    private Sprite projectileSprite;
 
     private Animator anim;
 
@@ -28,30 +31,45 @@ public class Workman : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    public void Init(Vector3 _maxPoint, Vector3 _targetPoint)
+    public void Init(Vector3 _maxPoint, Vector3 _targetPoint,Sprite _projectileSprite)
     {
         maxPoint = _maxPoint;
         targetPoint = _targetPoint;
+        projectileSprite = _projectileSprite;
+    }
+
+    public void SetAnimator(RuntimeAnimatorController controller)
+    {
+        anim.runtimeAnimatorController = controller;
     }
 
 
-    public IEnumerator FSM()
+    public IEnumerator FSM(float _waitTime)
     {
         //스폰되고 n초 후에 공격상태로 변경
-        anim.SetBool(hashIdle,true);
-        yield return new WaitForSeconds(3.0f);
-        anim.SetBool(hashIdle,false);
+        anim.SetBool(hashIdle, true);
+        yield return new WaitForSeconds(_waitTime);
 
-        anim.SetBool(hashAttack,true);
-        float t = 0.0f;
-        while(true)
+        anim.SetBool(hashIdle, false);
+        anim.SetBool(hashAttack, true);
+
+        while (!anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
         {
-            if (t > patternTime)
+            yield return null;
+        }
+
+        AnimationClip clip = anim.GetCurrentAnimatorClipInfo(0)[0].clip;
+        AnimatorStateInfo animationState = anim.GetCurrentAnimatorStateInfo(0);
+        attackTime = clip.length;
+        float t = attackTime;
+        while (true)
+        {
+            t += Time.deltaTime;
+            if (t >= attackTime)
             {
                 Shoot();
-                t= 0.0f;
+                t = 0.0f;
             }
-            t += Time.deltaTime;
             yield return null;
         }
     }
@@ -71,7 +89,8 @@ public class Workman : MonoBehaviour
     {
         //오브젝트 풀에서 꺼내온다.
         GameObject obj = ObjectPool.Instance.PopFromPool("Projectile");
-        obj.transform.position = transform.position;
-        obj.GetComponent<Projectile>().Init(projectileTime, transform.position, maxPoint, targetPoint);
+        obj.transform.position = transform.position + new Vector3(0, 0.5f, 0f);
+        obj.GetComponent<Projectile>().Init(projectileTime, obj.transform.position, maxPoint, targetPoint);
+        obj.GetComponent<Projectile>().SetSprite(projectileSprite);
     }
 }

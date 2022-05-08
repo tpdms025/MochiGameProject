@@ -6,10 +6,10 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mochi_Dragon_Controller
+  m_Name: Mochi_06_Fox_Controller
   m_Controller: {fileID: 9100000, guid: 52f944ec29bc2794c80aa96e4c9d38e2, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 2c7756aed60fbc14886353a10a2733aa, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 985afd73381f36547a72a4aa03c7bea5, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a592163e536ecc3418d533cc063312e6, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 17fec60967660eb4ba697e1e7fc1a80b, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: ad93e8ed60e1dd74d8a43bb041995d74, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 7bb12b34682c34c478c08e337d1eb680, type: 2}
