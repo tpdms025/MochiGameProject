@@ -32,7 +32,13 @@ public class Projectile : MonoBehaviour
     {
         renderer.enabled = true;
         explosionParticle.gameObject.SetActive(false);
+        transform.rotation = Quaternion.identity;
         StartCoroutine(Cor_Flight(flightTime,startPos, p1, targetPos));
+    }
+
+    public void SetSprite(Sprite sprite)
+    {
+        renderer.sprite = sprite;
     }
 
 
@@ -55,15 +61,33 @@ public class Projectile : MonoBehaviour
             float t2 = t * t;
             float u2 = u * u;
 
-            transform.position = pA * u2 +
+            Vector3 nextPos = pA * u2 +
                   pB * (t * u * 2) +
                   pC * t2;
+
+            //매프레임마다 타겟방향으로 투사체가 방향을 바꾼다.
+            RotateTowardsTarget(transform.position,nextPos);
+
+            //다음위치로 이동한다.
+            transform.position = nextPos;
+            
             yield return null;
         }
 
         StartCoroutine(Cor_Destroy());
 
     }
+
+    /// <summary>
+    /// 타겟방향으로 회전한다.
+    /// </summary>
+    private void RotateTowardsTarget(Vector3 fromPos,Vector3 _toPos)
+    {
+        Vector3 directionVec = _toPos - fromPos;
+        Quaternion qua = Quaternion.LookRotation(transform.forward,directionVec);
+        transform.rotation = Quaternion.Slerp(transform.rotation, qua, Time.deltaTime *5f);
+    }
+
 
     private IEnumerator Cor_Destroy()
     {

@@ -6,8 +6,6 @@ using UnityEngine.EventSystems;
 
 public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpHandler*/
 {
-    //최대 터치 횟수
-    private const int maxTouchCount = 30;
 
     //유저가 터치할 때 발생하는 이벤트 델리게이트 (누적 터치횟수, 최대 터치횟수)
     public static event Action<int, int> onUserTouched;
@@ -15,13 +13,17 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
     //누적 터치 횟수를 초기화 할 때 발생하는 이벤트 델리게이트
     public static Action onTouchReset;
 
+    //피버 발동조건인 최대 터치 횟수
+    private static int m_maxTouchCount = 3000;
+    public static int maxTouchCount { get { return m_maxTouchCount; } }
+
     //피버효과를 발동할 수 있는지
     public bool feverTrigger { get; private set; }
 
     //자동채굴의 여부
     public bool isAutomatic
     {
-        get { return DBManager.Inst.PlayerData.isAutoMining; }
+        get { return DBManager.Inst.inventory.isAutoMining; }
     }
 
 
@@ -29,7 +31,7 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
     //누적 터치 횟수
     public int touchCount
     {
-        get { return DBManager.Inst.PlayerData.touchCount; }
+        get { return DBManager.Inst.inventory.touchCount; }
         private set
         {
             //유저가 터치할 시 이벤트 발생
@@ -37,7 +39,7 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
             {
                 onUserTouched.Invoke(value, maxTouchCount);
             }
-            DBManager.Inst.PlayerData.touchCount = value;
+            DBManager.Inst.inventory.touchCount = value;
         }
     }
 
@@ -52,12 +54,17 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
         StartCoroutine(Loop_TouchEvent());
     }
 
+    private void OnDestroy()
+    {
+        onTouchReset -= ResetFever;
+    }
+
     #region 터치 인식 이전버전
     //public void OnPointerDown(PointerEventData data)
     //{
     //    OnTouch();
     //    CreateParticle(data.pressPosition, transform);
-    //    CreateGoldPopup(MoneyManager.Instance.JewelPerClick.ToString(), data.pressPosition, transform);
+    //    CreateGoldPopup(MoneyManager.Inst.JewelPerClick.ToString(), data.pressPosition, transform);
 
     //    //Debug.Log("OnPointerDown");
     //}
@@ -67,7 +74,7 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
     //    //OnTouch();
 
     //    //CreateParticle(data.pressPosition, transform);
-    //    //CreateGoldPopup(MoneyManager.Instance.JewelPerClick.ToString(), data.pressPosition, transform);
+    //    //CreateGoldPopup(MoneyManager.Inst.JewelPerClick.ToString(), data.pressPosition, transform);
 
     //}
     #endregion
@@ -78,16 +85,12 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
     public void OnTouch(Vector2 pos)
     {
         //파티클 생성
-        CreateParticle(MoneyManager.Instance.strJewelPerTouch, pos, transform);
+        CreateParticle(MoneyManager.Inst.strJewelPerTouch, pos, transform);
         //보석 증가
-        MoneyManager.Instance.AddJewel(MoneyManager.Instance.JewelPerTouch);
+        MoneyManager.Inst.SumJewel(MoneyManager.Inst.JewelPerTouch.Value);
     }
 
 
-
-    private void Initialize()
-    {
-    }
 
 
     /// <summary>
@@ -95,7 +98,7 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
     /// </summary>
     private IEnumerator Loop_TouchEvent()
     {
-        while (true)
+        while (!DBManager.Inst.isGameStop)
         {
             if (Input.touchCount > 0)
             {
@@ -105,7 +108,6 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
 
                     if (EventSystem.current.IsPointerOverGameObject(tempTouchs.fingerId))
                     {
-                        Debug.Log("Touch UI!");
                         continue;
                     }
 
@@ -171,7 +173,7 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
     private IEnumerator Loop_AutoMining()
     {
         float t = 0.0f;
-        while (true)
+        while (!DBManager.Inst.isGameStop)
         {
             if (isAutomatic)
             {
@@ -180,7 +182,7 @@ public class TouchController : MonoBehaviour/*, IPointerDownHandler, IPointerUpH
                 {
                     t = 0.0f;
                     //보석 증가
-                    MoneyManager.Instance.AddJewel(MoneyManager.Instance.JewelPerTouch * 3);
+                    MoneyManager.Inst.SumJewel(MoneyManager.Inst.JewelPerTouch.Value * 3);
                 }
             }
             yield return null;

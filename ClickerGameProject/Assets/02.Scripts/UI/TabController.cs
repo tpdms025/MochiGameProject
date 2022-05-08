@@ -31,8 +31,8 @@ public class TabController : MonoBehaviour
             {
                 int a = i;
                 m_toggles[i].onValueChanged.AddListener(delegate { OnToggleChanged(m_toggles[a], m_pageList[a].transform); });
-                
-                if(m_toggles[i].isOn)
+
+                if (m_toggles[i].isOn)
                 {
                     OnToggleChanged(m_toggles[a], m_pageList[a].transform);
                 }
