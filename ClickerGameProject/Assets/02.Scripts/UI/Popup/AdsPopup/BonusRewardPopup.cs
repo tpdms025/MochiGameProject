@@ -8,8 +8,10 @@ using UnityEngine.UI;
 
 public class BonusRewardPopup : PopupWithAds
 {
-    private BigInteger baseRewardAmount;
-    private BigInteger addRewardAmount;
+    //기본 보상량
+    private double baseRewardAmount;
+    //추가 보상량
+    private double addRewardAmount;
 
     //기본 보상량에 곱할 배수
     private float baseMultiply;
@@ -47,7 +49,7 @@ public class BonusRewardPopup : PopupWithAds
     /// </summary>
     private void ApplyBasicReward()
     {
-        MoneyManager.Instance.AddJewel(baseRewardAmount);
+        MoneyManager.Inst.SumJewel(baseRewardAmount);
     }
 
     /// <summary>
@@ -55,7 +57,7 @@ public class BonusRewardPopup : PopupWithAds
     /// </summary>
     private void ApplyAdditionalReward()
     {
-        MoneyManager.Instance.AddJewel(addRewardAmount);
+        MoneyManager.Inst.SumJewel(addRewardAmount);
     }
 
 
@@ -78,18 +80,18 @@ public class BonusRewardPopup : PopupWithAds
     /// 보너스 보상을 가져온다.
     /// </summary>
     /// <returns></returns>
-    private BigInteger GetBonusReward(float multiply)
+    private double GetBonusReward(float multiply)
     {
-        BigInteger bonusData = new BigInteger(multiply) * MoneyManager.Instance.JewelPerSec;
+        double bonusData = (multiply) * MoneyManager.Inst.JewelPerSec.Value;
         return bonusData;
     }
 
     /// <summary>
     /// 보너스 보상의 N배를 가져온다.
     /// </summary>
-    private BigInteger GetAdditionalBonusReward(float multiply)
+    private double GetAdditionalBonusReward(float multiply)
     {
-        BigInteger bonusData = baseRewardAmount * new BigInteger(multiply);
+        double bonusData = baseRewardAmount * (multiply);
         return bonusData;
     }
 

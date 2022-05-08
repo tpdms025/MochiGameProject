@@ -12,10 +12,8 @@ public class BonusBat : MonoBehaviour
     //시작 위치
     private Vector3 startPoint;
 
-    //이동 속도
-    [SerializeField] private float speed = 2.0f;
 
-    //날고 있는지 여부
+    //날고 있는지
     [SerializeField] private bool isFlying = false;
 
     //객체 터치시 이벤트
@@ -36,13 +34,15 @@ public class BonusBat : MonoBehaviour
     [SerializeField]private float spawnDuration;
 
 
+
+
     [Space(10)]
     [Header("Flight")]
     //총 이동 시간
     private const float flightTime = 8.0f;
 
     //총 이동한 거리
-    public float totaldistance = 0.0f;
+    public float totalDistance = 0.0f;
 
     //매프레임마다 이동할 단위
     private float distUnit = 0.0f;
@@ -67,14 +67,15 @@ public class BonusBat : MonoBehaviour
         //강화할때 변경될 예정
         //임시값
         reductionRate = 0.0f;
-        reductionRate = 90.0f;
         ChangeSpawnTime();
+
     }
 
     private void Start()
     {
         transform.position = startPoint;
-        OnReset();
+
+        StartCoroutine(Cor_StartTimer());
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -85,21 +86,27 @@ public class BonusBat : MonoBehaviour
             OnReset();
         }
     }
+
+
     #endregion
 
 
     #region Spawn
 
-    public void ChangeSpawnTime()
+    /// <summary>
+    /// 스폰 타이머를 시작한다.
+    /// </summary>
+    private IEnumerator Cor_StartTimer()
     {
-        finalSpawnTime = baseSpawnTime - (baseSpawnTime * reductionRate * 0.01f);
+        //일꾼을 1개이상 소유할 때까지 기다린다.
+        yield return new WaitUntil(() => DBManager.Inst.inventory.workmanCount > 0);
+        OnReset();
     }
-
 
     /// <summary>
     /// 위치와 스폰시간을 리셋한다.
     /// </summary>
-    private void OnReset()
+    public void OnReset()
     {
         EndTheFlight();
         StartCoroutine(Cor_SpawnTimer());
@@ -119,7 +126,14 @@ public class BonusBat : MonoBehaviour
         StartCoroutine(MoveCosinePath());
     }
 
+    public void ChangeSpawnTime()
+    {
+        finalSpawnTime = baseSpawnTime - (baseSpawnTime * reductionRate * 0.01f);
+    }
+
     #endregion
+
+    #region Move
 
     /// <summary>
     /// 코사인 이동경로로 이동한다.
@@ -131,8 +145,8 @@ public class BonusBat : MonoBehaviour
 
         //float distance = Vector3.Distance(transform.position, targetPos.position);
         float time = 0;
-        totaldistance = 0;
-        distUnit = (targetPoint - startPoint).x / flightTime;
+        totalDistance = 0;
+        //distUnit = (targetPoint - startPoint).x / flightTime;
         while (isFlying/*Mathf.Abs(distance) >= 1*/)
         {
             //객체를 터치했다면 팝업창 열기
@@ -150,9 +164,9 @@ public class BonusBat : MonoBehaviour
             //Debug.Log("distance" + distance);
             //transform.position = Vector3.Lerp(transform.position, targetPos.position, speed * Time.deltaTime);
             time += Time.deltaTime;
-            totaldistance = time * distUnit;
-            float x = startPoint.x + totaldistance;
-            float y = Mathf.Cos(totaldistance);
+            totalDistance = time * distUnit;
+            float x = startPoint.x + totalDistance;
+            float y = Mathf.Cos(totalDistance);
             transform.position = new Vector3(x, y, transform.position.z);
 
             yield return null;
@@ -191,11 +205,12 @@ public class BonusBat : MonoBehaviour
         transform.position = startPoint;
     }
 
+    #endregion
+
 
     /// <summary>
     /// 객체를 터치했는지 확인한다.
     /// </summary>
-    /// <returns></returns>
     private bool IsTouchedObject()
     {
         if (Input.GetMouseButtonDown(0))
@@ -206,7 +221,6 @@ public class BonusBat : MonoBehaviour
             //마우스 포인트 좌표를 만든다.
             if (hit.collider !=null)
             {
-                Debug.Log("hit?" + hit.collider.gameObject.name);
                 if (hit.collider.tag == "BonusBat")
                 {
                     return true;

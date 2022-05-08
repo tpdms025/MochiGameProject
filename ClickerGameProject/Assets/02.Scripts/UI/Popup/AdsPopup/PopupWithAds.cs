@@ -27,6 +27,11 @@ public class PopupWithAds : Popup , IAdsRewardHandler
         SubscribeToButtonEvents();
     }
 
+    protected void OnDestroy()
+    {
+        UnsubscribeFromButtonEvents();
+    }
+
 
     #region interface Method
 

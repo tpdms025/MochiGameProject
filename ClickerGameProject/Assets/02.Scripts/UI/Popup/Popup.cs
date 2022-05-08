@@ -10,7 +10,7 @@ public class Popup : MonoBehaviour
     //처음에 창을 여는지
     [SerializeField] private bool firstOpen = false;
 
-    [SerializeField] protected Button baseButton;
+    public Button baseButton;
 
 
 

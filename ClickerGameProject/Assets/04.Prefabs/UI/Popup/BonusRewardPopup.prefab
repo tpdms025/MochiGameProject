@@ -475,8 +475,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uB3C4\uB451 \uBC15\uC950 \uD604\uC0C1\uAE08 \uD68D\uB4DD!"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 51ca0abcf085dc14eb15bc88677c81ac, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a07a9bc879e887b4fb020e7e5d75de03, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 56a83f525474ac3438ddb6e4bbc767c9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -500,13 +500,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 55.2
+  m_fontSize: 60
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 60
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -885,7 +885,7 @@ GameObject:
   - component: {fileID: 6128239820461319291}
   - component: {fileID: 6128239820461319290}
   m_Layer: 5
-  m_Name: BonusJewelPopup
+  m_Name: BonusRewardPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1278,7 +1278,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 72}
-  m_SizeDelta: {x: -40.679993, y: 50}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &1935389911070305584
 CanvasRenderer:
@@ -1310,8 +1310,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "+99.99Z \uCD94\uAC00 \uD68D\uB4DD"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 760dc62a6fc556649ac01e5a8e31ba15, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d03f8e83c16bf5a489d304fea60bd28a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 28397ece2811e2d4896a46026de81161, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1335,13 +1335,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 32.3
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontSizeMax: 32.3
+  m_fontStyle: 0
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 1024
   m_textAlignment: 65535
@@ -1444,8 +1444,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uD68D\uB4DD"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
-  m_sharedMaterial: {fileID: 374097108726311435, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a07a9bc879e887b4fb020e7e5d75de03, type: 2}
+  m_sharedMaterial: {fileID: -5624692821000926064, guid: a07a9bc879e887b4fb020e7e5d75de03, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1578,8 +1578,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "+99.99Z \uD68D\uB4DD"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 760dc62a6fc556649ac01e5a8e31ba15, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d03f8e83c16bf5a489d304fea60bd28a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 28397ece2811e2d4896a46026de81161, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1603,13 +1603,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 32.3
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontSizeMax: 32.3
+  m_fontStyle: 0
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 1024
   m_textAlignment: 65535
@@ -1712,8 +1712,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "3\uBC30 \uD68D\uB4DD"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
-  m_sharedMaterial: {fileID: 374097108726311435, guid: f31e7a219f212d24ebfa936db899ac5a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a07a9bc879e887b4fb020e7e5d75de03, type: 2}
+  m_sharedMaterial: {fileID: -5624692821000926064, guid: a07a9bc879e887b4fb020e7e5d75de03, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
