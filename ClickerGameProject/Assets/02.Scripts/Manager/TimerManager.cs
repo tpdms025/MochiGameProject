@@ -15,37 +15,39 @@ public class TimerManager : MonoBehaviour
     public DateTime nowDateTime { get; private set; }
 
     //오프라인 시간의 최대 일자
-    private const int maxConpareDays = 1;
+    private readonly int maxConpareDays = 1;
 
     //오프라인 시간 (최대 1일)
     public TimeSpan offlineTimeSpan { get; private set; }
 
 
 
-    //public  const string url = "http://www.google.com";
+
+
+    public readonly string url = "http://www.google.com";
 
     ////인터넷 연결을 체크하는 대기 시간
-    //private const float waitingTime = 5.0f;
+    //private readonly float waitingTime = 5.0f;
 
-    ////인터넷 연결 여부
-    //private bool isConnect;
+    //인터넷 연결 여부
+    private bool isConnect;
 
     ////인터넷 연결이 실패일 경우 호출하는 이벤트
     //public event Action onDisconnectInternet;
 
-    //[SerializeField] private NetworkPopup popup;
+    [SerializeField] private NetworkPopup popup;
 
 
-    public static TimerManager Instance { get; private set; }
+    public static TimerManager Inst { get; private set; }
 
     #region Unity methods
 
     private void Awake()
     {
         //싱글톤
-        if (Instance == null)
+        if (Inst == null)
         {
-            Instance = this;
+            Inst = this;
             DontDestroyOnLoad(this.gameObject);
         }
         else
@@ -55,21 +57,24 @@ public class TimerManager : MonoBehaviour
     }
 
 
-    private void OnApplicationQuit()
-    {
-        //TODO :DB저장
-        //************************************
-        lastDateTime = new DateTime(2022, 02, 10, 0, 0, 0);
-    }
+    //private void OnApplicationQuit()
+    //{
+    //    //TODO :DB저장
+    //    lastDateTime = new DateTime(2022, 02, 10, 0, 0, 0);
+    //}
     #endregion
 
 
-    public IEnumerator LoadDateData()
+    public void LoadDateData()
     {
-        lastDateTime = new DateTime(2022, 02, 28, 15, 0, 0);
+        lastDateTime = DBManager.Inst.playData.lastDateTime;
         nowDateTime = System.DateTime.Now;
         offlineTimeSpan = CalculateOfflineTime();
-        yield return null;
+#if UNITY_EDITOR
+        Debug.Log("lastDateTime" + lastDateTime);
+        Debug.Log("nowDateTime" + nowDateTime);
+        Debug.Log("offlineTimeSpan" + offlineTimeSpan);
+#endif
     }
 
     #region Load Google Date
@@ -192,7 +197,6 @@ public class TimerManager : MonoBehaviour
         {
             compareDateTime = new TimeSpan(maxConpareDays,0,0,0);
         }
-        Debug.Log("Offline time calculate is " + (int)compareDateTime.TotalMinutes);
         return compareDateTime;
     }
 }

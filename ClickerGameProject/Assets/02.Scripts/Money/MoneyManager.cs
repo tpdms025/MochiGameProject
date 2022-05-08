@@ -6,35 +6,24 @@ using UnityEngine;
 
 public class MoneyManager : MonoBehaviour
 {
-
     #region Data
 
     //보유하고 있는 보석
-    private BigInteger m_jewel;
-
-    //보유하고 있는 구슬
-    private BigInteger m_marble;
+    private ValueModifiers jewel;
 
     //보유하고 있는 코인
-    private BigInteger m_coin;
+    private ValueModifiers coin;
+
+    // 터치당 획득량
+    private ValueModifiers totalJewelPerTouch;
+
+    // 초당 획득량
+    private ValueModifiers totalJewelPerSec;
+    
 
 
-
-    // 터치할 때 증가하는 전체의 보석량
-    public Ability totalJewelPerTouch;
-
-    // 초당 증가하는 전체의 보석량
-    public Ability totalJewelPerSec;
-
-
-
-
-
-    //보유보석의 문자열
+    //보유 보석의 문자열
     public string strJewel;
-
-    //보유구슬의 문자열
-    public string strMarble;
 
     //보유 코인의 문자열
     public string strCoin;
@@ -46,95 +35,67 @@ public class MoneyManager : MonoBehaviour
     public string strJewelPerSec;
 
 
+    //==============Ability================
+    // 일꾼 생산량 (Rate만 사용하기)
+    public List<ValueModifiers> workmansAmount;
 
-    //값이 변할 때 호출하는 델리게이트
-    public event Action<BigInteger> onJewelChanged;
-    public event Action<BigInteger> onMableChanged;
-    public event Action<BigInteger> onCoinChanged;
+    //자동채굴의 지속시간 (Rate만 사용하기)
+    public ValueModifiers autoMiningDuration;   
+
+    //자동채굴의 터치횟수
+    public ValueModifiers autoMiningTouchCnt;
+
+    //피버 지속시간 (Rate만 사용하기)
+    public ValueModifiers feverDuration;   
+
+    //피버 광석의 획득량
+    public ValueModifiers feverAmount;
+    //======================================
 
     #endregion
 
     #region Property
 
+
     /// <summary>
     /// m_jewel의 프로퍼티
     /// </summary>
-    public BigInteger Jewel
+    public ValueModifiers Jewel
     {
-        get { return m_jewel; } 
-        private set{ 
-            m_jewel = value;
-            if (onJewelChanged != null)
-            {
-                onJewelChanged(m_jewel);
-            }
-        }
-    }
-
-    /// <summary>
-    /// m_marble의 프로퍼티
-    /// </summary>
-    public BigInteger Marble
-    {
-        get { return m_marble; }
-        private set
-        {
-            m_marble = value;
-            if (onMableChanged != null)
-            {
-                onMableChanged(m_marble);
-            }
-        }
+        get { return jewel; }
     }
 
     /// <summary>
     /// m_coin의 프로퍼티
     /// </summary>
-    public BigInteger Coin
+    public ValueModifiers Coin
     {
-        get { return m_coin; }
-        private set
-        {
-            m_coin = value;
-            if (onCoinChanged != null)
-            {
-                onCoinChanged(m_coin);
-            }
-        }
+        get { return coin; }
     }
-
-
 
     /// <summary>
     /// m_jewelPerTouch의 프로퍼티
     /// </summary>
-    public BigInteger JewelPerTouch
+    public ValueModifiers JewelPerTouch
     {
-        get { return totalJewelPerTouch.Value; }
-        private set{
-            totalJewelPerTouch.Value = value;
-        }
+        get { return totalJewelPerTouch; }
     }
 
     /// <summary>
     /// m_jewelPerSec의 프로퍼티
     /// </summary>
-    public BigInteger JewelPerSec
+    public ValueModifiers JewelPerSec
     {
-        get { return totalJewelPerSec.Value; }
-        private set {
-            totalJewelPerSec.Value = value;
-        }
+        get { return totalJewelPerSec; }
     }
 
-  
 
     #endregion
 
     #region Fields
 
     private static MoneyManager instance = null;
-    public static MoneyManager Instance
+    public static MoneyManager Inst
     {
         get { return instance; }
         set { instance = value;  }
@@ -160,59 +121,113 @@ public class MoneyManager : MonoBehaviour
 
     private void Start()
     {
-        //TODO: DB 읽어오기
-        //현재 임시
-        //
-        InitJewel();
-        InitMarble();
-        InitCoin();
-
-        totalJewelPerTouch = new Ability(1);
-        totalJewelPerSec = new Ability(1);
-
         StartCoroutine(Loop_IncreaseJewelPerSec());
     }
 
     #endregion
+
+    public void SetMoneyData(double _jewel, double _coin, double _jewelPerTouch, double _jewelPerSec)
+    {
+        jewel = new ValueModifiers(_jewel, true, true);
+        coin = new ValueModifiers(_coin, true, true);
+        totalJewelPerTouch = new ValueModifiers(_jewelPerTouch, true, true);
+        totalJewelPerSec = new ValueModifiers(_jewelPerSec, true, true);
+    }
+
+    public void SetAbilityData(int[] levelList)
+    {
+        //강화 정보
+        workmansAmount = new List<ValueModifiers>();
+        for (int i = 0; i < levelList.Length; i++)
+        {
+            double amount;
+            int level = levelList[i];
+            if(level == 0)
+            {
+                amount = 0d;
+            }
+            amount = DBManager.Inst.GetWorkmanOriginData(i, level).amount;
+            workmansAmount.Add(new ValueModifiers(amount, true, true));
+        }
+        autoMiningTouchCnt = new ValueModifiers(3, true, true);
+        autoMiningDuration = new ValueModifiers(60, true, true);
+        feverAmount = new ValueModifiers(3, true, true);
+        feverDuration = new ValueModifiers(5, true, true);
+
+    }
+
+    public void InitializeAll()
+    {
+        InitJewel();
+        InitCoin();
+        InitJewelPerTouch();
+        InitJewelPerSec();
+    }
+
+
+    /// <summary>
+    /// 허용된 재화만 0으로 환생때 초기화한다.
+    /// </summary>
+    public void ResetOnPrestige()
+    {
+        //코인은 제외
+        InitJewel();
+        InitJewelPerTouch();
+        InitJewelPerSec();
+
+        InitAbility();
+    }
+
+    public void InitAbility()
+    {
+        InitWorkmansEnhance();
+        InitAutoMiningDurationEnhance();
+        InitAutoMiningTouchCntEnhance();
+        InitFeverAmountEnhance();
+        InitFeverDurationEnhance();
+    }
 
 
     #region Methods
 
     #region Modify Jewel Function
 
-    public void AddJewel(BigInteger _newValue)
+    public void SumJewel(double _newValue)
     {
-        Jewel += _newValue;
+        jewel.SumValue(_newValue);
     }
 
-    public void SubJewel(BigInteger _newValue)
+    public void SubJewel(double _newValue)
     {
-        Jewel -= _newValue;
+        jewel.SubValue(_newValue);
     }
 
     public void InitJewel()
     {
-        Jewel = 0;
+        jewel.InitValue();
     }
 
 
     #endregion
 
-    #region Modify JewelPerClick Function
+    #region Modify JewelPerTouch Function
 
-    public void AddJewelPerClick(BigInteger _newValue)
+    public void SumJewelPerTouch(double _newValue)
     {
-        JewelPerTouch += _newValue;
+        totalJewelPerTouch.SumValue(_newValue);
     }
 
-    public void SubJewelPerClick(BigInteger _newValue)
+    public void SubJewelPerTouch(double _newValue)
     {
-        JewelPerTouch -= _newValue;
+        totalJewelPerTouch.SubValue(_newValue);
     }
 
-    public void InitJewelPerClick()
+    public void InitJewelPerTouch()
     {
-        JewelPerTouch = 0;
+        //1레벨 값으로 초기화
+        totalJewelPerTouch.InitValue();
+        //totalJewelPerTouch.SumValue(2);
+        totalJewelPerTouch.SumValue(DBManager.Inst.GetOreOriginData(0, 0).amount);
     }
 
 
@@ -220,76 +235,104 @@ public class MoneyManager : MonoBehaviour
 
     #region Modify JewelPerSec Function
 
-    public void AddJewelPerSec(BigInteger _newValue)
+    public void SumJewelPerSec(double _newValue)
     {
-        JewelPerSec += _newValue;
+        totalJewelPerSec.SumValue(_newValue);
     }
 
-    public void SubJewelPerSec(BigInteger _newValue)
+    public void SubJewelPerSec(double _newValue)
     {
-        JewelPerSec -= _newValue;
+        totalJewelPerSec.SubValue(_newValue);
     }
 
     public void InitJewelPerSec()
     {
-        JewelPerSec = 0;
+        totalJewelPerSec.InitValue();
     }
 
     #endregion
 
-    #region Modify Cube Function
+    #region Modify Coin Function
 
-    public void AddCoin(BigInteger _newValue)
+    public void SumCoin(double _newValue)
     {
-        Coin += _newValue;
+        coin.SumValue(_newValue);
     }
 
-    public void SubCoin(BigInteger _newValue)
+    public void SubCoin(double _newValue)
     {
-        Coin -= _newValue;
+        coin.SubValue(_newValue);
     }
 
     public void InitCoin()
     {
-        Coin = 0;
+        coin.InitValue();
     }
 
     #endregion
 
-    #region Modify Marble Function
-
-    public void AddMarble(BigInteger _newValue)
+    #region Workman Enhance Function
+    private void InitWorkmansEnhance()
     {
-        Marble += _newValue;
+        foreach(var workman in workmansAmount)
+        {
+            workman.InitValue();
+        }
     }
-
-    public void SubMarble(BigInteger _newValue)
+    
+    /// <summary>
+    /// 모든 일꾼 값을 초당획득량에 더한다.
+    /// </summary>
+    public void SumAllWorkmanAmountToJewelPerSec()
     {
-        Marble -= _newValue;
+        totalJewelPerSec.InitBaseValue();
+        for(int i=0; i<workmansAmount.Count; i++)
+        {
+            SumJewelPerSec(workmansAmount[i].Value);
+        }
     }
+    #endregion
 
-    public void InitMarble()
+    #region Automatic Mining Enhance Function
+    private void InitAutoMiningTouchCntEnhance()
     {
-        Marble = 0;
+        autoMiningTouchCnt.InitValue();
     }
+    private void InitAutoMiningDurationEnhance()
+    {
+        autoMiningDuration.InitValue();
+    }
+    #endregion
 
+    #region Fever Enhance Function
+    private void InitFeverAmountEnhance()
+    {
+        feverAmount.InitValue();
+    }
+    private void InitFeverDurationEnhance()
+    {
+        feverDuration.InitValue();
+    }
     #endregion
 
     #endregion
+
 
     #region Private Methods
 
     /// <summary>
-    /// 1초마다 보석을 추가하는 반복 함수
+    /// 1초마다 초당 획득량만큼 보석을 추가하는 반복 함수
     /// </summary>
     /// <returns></returns>
     private IEnumerator Loop_IncreaseJewelPerSec()
     {
-        while (true)
+        yield return new WaitUntil(() => DBManager.Inst.loadAllCompleted);
+
+        while (!DBManager.Inst.isGameStop)
         {
-            if(JewelPerSec != 0)
+            if(JewelPerSec.Value != 0)
             {
-                AddJewel(JewelPerSec);
+                SumJewel(JewelPerSec.Value);
             }
             yield return new WaitForSeconds(1.0f);
         }
@@ -301,39 +344,11 @@ public class MoneyManager : MonoBehaviour
     /// </summary>
     public void ConvertToCurrencyString()
     {
-        strJewel = CurrencyParser.ToCurrencyString(Jewel);
-        strJewelPerTouch = CurrencyParser.ToCurrencyString(JewelPerTouch);
-        strJewelPerSec = CurrencyParser.ToCurrencyString(JewelPerSec);
-        strMarble = CurrencyParser.ToCurrencyString(Marble);
-        strCoin = CurrencyParser.ToCurrencyString(Coin);
+        strJewel = CurrencyParser.ToCurrencyString(Jewel.Value);
+        strJewelPerTouch = CurrencyParser.ToCurrencyString(JewelPerTouch.Value);
+        strJewelPerSec = CurrencyParser.ToCurrencyString(JewelPerSec.Value);
+        strCoin = CurrencyParser.ToCurrencyString(Coin.Value);
     }
-
-    ///// <summary>
-    ///// 초당 증가량 딕셔너리의 데이터를 변경한다.
-    ///// </summary>
-    ///// <param name="perSecList"></param>
-    ///// <param name="_id"></param>
-    ///// <param name="newValue"></param>
-    //public void ChangedPerSec(Dictionary<int,BigInteger> perSecList,int _id, BigInteger newValue)
-    //{
-    //    BigInteger interval = newValue - perSecList[_id];
-    //    JewelPerSec += interval;
-    //    perSecList[_id] = newValue;
-    //}
-
-    ///// <summary>
-    ///// 초당 증가량 딕서녀리에 데이터를 추가한다.
-    ///// </summary>
-    ///// <param name="perSecList"></param>
-    ///// <param name="_id"></param>
-    ///// <param name="newValue"></param>
-    //public void AddJewelPerSec(Dictionary<int, BigInteger> perSecList, int _id, BigInteger newValue)
-    //{
-    //    if (perSecList[_id] != null)
-    //        return;
-    //    perSecList.Add(_id, newValue);
-    //    JewelPerSec += newValue;
-    //}
 
  
 
