@@ -4,27 +4,11 @@ using UnityEngine;
 
 public class NetworkPopup : Popup
 {
-
-    private static NetworkPopup instance = null;
-    public static NetworkPopup Instance
-    {
-        get { return instance; }
-        set { instance = value; }
-    }
     protected override void Awake()
     {
         base.Awake();
-        //ΩÃ±€≈Ê
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            Destroy(this.gameObject);
-        }
-        baseButton.onClick.AddListener(delegate { Application.Quit(); });
+     
+        baseButton.onClick.AddListener(delegate { ApplicationQuit(); });
 
     }
     protected override void Start()
@@ -34,13 +18,22 @@ public class NetworkPopup : Popup
 
     private void OnEnable()
     {
-        //TimerManager.Instance.onDisconnectInternet += ToggleOpenOrClose;
+        //TimerManager.Inst.onDisconnectInternet += ToggleOpenOrClose;
         //Debug.Log("OnEnable");
     }
 
     private void OnDisable()
     {
-        //TimerManager.Instance.onDisconnectInternet -= ToggleOpenOrClose;
+        //TimerManager.Inst.onDisconnectInternet -= ToggleOpenOrClose;
 
+    }
+
+    private void ApplicationQuit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
     }
 }
