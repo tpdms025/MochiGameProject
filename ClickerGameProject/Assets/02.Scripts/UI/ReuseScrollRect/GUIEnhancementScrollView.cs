@@ -167,7 +167,6 @@ public class GUIEnhancementScrollView : MonoBehaviour
             return;
 
         int curLevel = curLevelList[type];
-        Debug.Log("index" + index + "type" + type);
 
         //레벨이 0 ~ maxLevel 범위가 아닐 경우 리턴
         if (0 > curLevel || curLevel >= maxLevel) 

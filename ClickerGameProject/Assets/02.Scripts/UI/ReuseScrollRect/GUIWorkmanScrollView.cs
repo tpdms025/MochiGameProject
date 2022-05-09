@@ -69,8 +69,6 @@ public class GUIWorkmanScrollView : MonoBehaviour
         //그리드에 데이터 변경
         //일꾼 강화는 인덱스 1부터 시작하여 index -1로 설정.
         ProductCellData data = GetToCellData((int)index - 1, curLevelList[(int)index - 1]);
-        Debug.Log("RefreshCell" + index);
-        Debug.Log("RefreshCell data" + data.name);
         grid.SetItem((int)index - 1, data);
         isEnhance = true;
 
@@ -88,8 +86,8 @@ public class GUIWorkmanScrollView : MonoBehaviour
         if(isEnhance)
         {
             //Refresh Grid
-            grid.RefreshAllCell();
-            //grid.RefillAllCell();
+            //grid.RefreshAllCell();
+            grid.RefillAllCell();
             isEnhance = false;
         }
     }
