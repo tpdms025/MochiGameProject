@@ -29,14 +29,15 @@ public class BuffControl : MonoBehaviour
 
     private void Awake()
     {
-        buffableEntity = GetComponent<BuffableEntity>();
+        buffableEntity = new BuffableEntity();
 
-        //버프 엔더티에 버프를 추가하는 이벤트 등록
+        //버프 엔더티에 버프를 추가하는 이벤트를 등록
         buffActions = new List<Action<float>>();
-        buffActions.Add((float duration) => buffableEntity.AddBuff(new AutomaticMiningBuff(0, duration, MoneyManager.Inst.JewelPerTouch)));
-        buffActions.Add((float duration) => buffableEntity.AddBuff(new IncreaseTimedBuff(1, duration, MoneyManager.Inst.JewelPerTouch)));
-        buffActions.Add((float duration) => buffableEntity.AddBuff(new IncreaseTimedBuff(2, duration, MoneyManager.Inst.JewelPerSec)));
-        buffActions.Add((float duration) => buffableEntity.AddBuff(new FeverBuff(3, duration, MoneyManager.Inst.JewelPerTouch)));
+        buffActions.Add((float duration) => buffableEntity.AddObserver(new AutomaticMiningBuff(0, duration, MoneyManager.Inst.JewelPerTouch)));
+        buffActions.Add((float duration) => buffableEntity.AddObserver(new IncreaseTimedBuff(1, duration, MoneyManager.Inst.JewelPerTouch)));
+        buffActions.Add((float duration) => buffableEntity.AddObserver(new IncreaseTimedBuff(2, duration, MoneyManager.Inst.JewelPerSec)));
+        buffActions.Add((float duration) => buffableEntity.AddObserver(new FeverBuff(3, duration, MoneyManager.Inst.JewelPerTouch)));
+
     }
 
     private void Start()
@@ -60,6 +61,8 @@ public class BuffControl : MonoBehaviour
         SaveAction += SaveSkillTime;
         SaveAction += SaveSkillCooldown;
         SaveAction += SaveBuffTime;
+
+        StartCoroutine(buffableEntity.Cor_LoopCheckBuffs());
     }
 
 

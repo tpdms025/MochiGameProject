@@ -35,6 +35,7 @@ public class PopupWithAds : Popup , IAdsRewardHandler
 
     #region interface Method
 
+    //@Override
     public void OnAdsFinished()
     {
         if(onAdsFinished != null)
@@ -42,6 +43,7 @@ public class PopupWithAds : Popup , IAdsRewardHandler
             onAdsFinished.Invoke();
         }
     }
+    //@Override
     public void OnAdsEnded()
     {
         if(onAdsEnded != null)
@@ -72,6 +74,11 @@ public class PopupWithAds : Popup , IAdsRewardHandler
     {
     }
 
+    public void SetAction(Action onAdsFinished, Action onAdsEnded)
+    {
+        this.onAdsFinished = onAdsFinished; 
+        this.onAdsEnded = onAdsEnded;
+    }
 
 
     //protected void ViewAds()
@@ -79,6 +86,6 @@ public class PopupWithAds : Popup , IAdsRewardHandler
     //    UnityAdsManager.Instance.ShowRewarded(onTriggerEffect, onAdsEnded);
     //}
 
-  
+
 
 }

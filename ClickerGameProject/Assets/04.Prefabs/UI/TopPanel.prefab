@@ -748,7 +748,6 @@ GameObject:
   - component: {fileID: 5174557448547275177}
   - component: {fileID: 5174557448547275174}
   - component: {fileID: 5174557448547275176}
-  - component: {fileID: 511858254801989099}
   - component: {fileID: 765055428325289602}
   m_Layer: 5
   m_Name: BuffPanel
@@ -814,18 +813,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &511858254801989099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5174557448547275178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05ffd29173565c443af623b012247375, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &765055428325289602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1687,6 +1674,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5174557448547275177}
     m_Modifications:
+    - target: {fileID: 5246130534092564302, guid: a6c01f39c3857ef4e822b88076c995ef, type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 6140654942207563455, guid: a6c01f39c3857ef4e822b88076c995ef, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
